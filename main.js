@@ -1,12 +1,17 @@
 /**
  * Check if the element is visible to the user
+ *
  * @param {HTMLElement} element An element in the page
  * @returns {boolean}
  */
 function elementIsVisibleInViewport(element) {
   const computed = window.getComputedStyle(element);
 
-  if (!element.checkVisibility() || computed.visibility === "hidden" || computed.display === "none") {
+  if (
+    !element.checkVisibility() ||
+    computed.visibility === "hidden" ||
+    computed.display === "none"
+  ) {
     return false;
   }
 
@@ -15,13 +20,15 @@ function elementIsVisibleInViewport(element) {
   return (
     rect.top >= 0 &&
     rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.bottom <=
+      (window.innerHeight || document.documentElement.clientHeight) &&
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
-};
+}
 
 /**
  * Checks if the element is a link and visible
+ *
  * @param {HTMLElement} element
  * @returns {boolean}
  */
@@ -35,18 +42,18 @@ function isVisibleLink(element) {
 
 /**
  * Gets a list of all the visible links in the DOM
+ *
  * @returns {HTMLElement[]}
  */
 function allLinksInViewport() {
-  /**
-   * @type {NodeListOf<HTMLElement>}
-   */
+  /** @type {NodeListOf<HTMLElement>} */
   const allElements = document.querySelectorAll("body *");
   return [...allElements].filter(isVisibleLink);
 }
 
 /**
  * Add a link jump UI element to the page
+ *
  * @param {HTMLElement} link
  * @param {string} letter
  */
@@ -63,9 +70,9 @@ function addLinkJump(link, letter) {
 
   jump.style.position = "absolute";
   jump.style.left = `${rect.left + window.scrollX - 20}px`;
-  jump.style.top = `${rect.top + window.scrollY + (height / 2) - 10}px`;
-  jump.style.width = '50px';
-  jump.style.height = '30px';
+  jump.style.top = `${rect.top + window.scrollY + height / 2 - 10}px`;
+  jump.style.width = "50px";
+  jump.style.height = "30px";
   jump.style.fontSize = "20px";
   jump.style.zIndex = link.style.zIndex + 1;
 
@@ -86,23 +93,22 @@ function addLinkJump(link, letter) {
   document.body.appendChild(border);
 }
 
-/**
- * Remove all link jumps from the DOM
- */
+/** Remove all link jumps from the DOM */
 function removeLinkJumps() {
   [...document.querySelectorAll(".--jump")].map((x) => x.remove());
 }
 
 /**
  * Main function:
- *    - Gets all visibile links in the page
- *    - Adds a listener for a shortcut for each link
- *    - Add a visual indicator for each shortcut for each link
- *    - Removes listener when user hits Esc
+ *
+ * - Gets all visibile links in the page
+ * - Adds a listener for a shortcut for each link
+ * - Add a visual indicator for each shortcut for each link
+ * - Removes listener when user hits Esc
  */
 function trigger() {
   const links = allLinksInViewport();
-  /** @type {{ [key: string]:  HTMLElement }} */
+  /** @type {{ [key: string]: HTMLElement }} */
   const letters = {};
 
   let letter = 97;
@@ -110,7 +116,10 @@ function trigger() {
 
   for (const link of links) {
     // TODO: implement behaviour for when there's more links than available letters
-    const char = count === 0 ? String.fromCharCode(letter): `${String.fromCharCode(letter)}${count}`;
+    const char =
+      count === 0
+        ? String.fromCharCode(letter)
+        : `${String.fromCharCode(letter)}${count}`;
     letters[char] = link;
     addLinkJump(link, char);
     letter++;
@@ -120,7 +129,6 @@ function trigger() {
       count++;
     }
   }
-
 
   /** @type {(event: KeyboardEvent) => void} */
   let keydownListener = (event) => {
@@ -155,7 +163,6 @@ function trigger() {
       removeLinkJumps();
     }
   };
-
 
   window.addEventListener("keydown", keydownListener);
 }
