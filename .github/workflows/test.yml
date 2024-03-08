@@ -8,8 +8,11 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
-      - name: Set the correct Node version using nvm
+      - name: Install nvm
         shell: bash 
+        run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      - name: Run nvm
+        shell: bash
         run: nvm install
       - name: Install Dependencies
         run: npm install
