@@ -1,6 +1,6 @@
 name: Build and test
 on: [pull_request, push]
-  
+
 jobs:
   build:
     name: Test
@@ -11,7 +11,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v4.0.2
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
       - name: Install deps
         run: npm ci
       - name: Test

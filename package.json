@@ -4,7 +4,7 @@
   "description": "A Vimium inspired keyboard shortcut script for browsers. Highlights all clickable elements on a page, then provides shortcuts to click them so you never have to leave your keyboard again!",
   "main": "main.js",
   "scripts": {
-    "test": "tsc --noEmit"
+    "test": "tsc --noEmit && npx prettier --check src"
   },
   "author": "",
   "license": "BSD-3-Clause",
