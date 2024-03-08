@@ -1,7 +1,7 @@
 /**
  * Check if the element is visible to the user
  * @param {HTMLElement} element An element in the page
- * @returns {boolean} 
+ * @returns {boolean}
  */
 function elementIsVisibleInViewport(element) {
   const computed = window.getComputedStyle(element);
@@ -17,7 +17,7 @@ function elementIsVisibleInViewport(element) {
     rect.left >= 0 &&
     rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-  ); 
+  );
 };
 
 /**
@@ -38,20 +38,24 @@ function isVisibleLink(element) {
  * @returns {HTMLElement[]}
  */
 function allLinksInViewport() {
-  return [...document.querySelectorAll("body *")].filter(isVisibleLink);
+  /**
+   * @type {NodeListOf<HTMLElement>}
+   */
+  const allElements = document.querySelectorAll("body *");
+  return [...allElements].filter(isVisibleLink);
 }
 
 /**
  * Add a link jump UI element to the page
- * @param {HTMLElement} link 
- * @param {string} letter 
+ * @param {HTMLElement} link
+ * @param {string} letter
  */
 function addLinkJump(link, letter) {
   const rect = link.getBoundingClientRect();
   const height = rect.bottom - rect.top;
 
   const jump = document.createElement("div");
-  
+
   const str = document.createElement("strong");
   str.innerText = letter;
   str.style.backgroundColor = "white";
@@ -74,7 +78,7 @@ function addLinkJump(link, letter) {
   border.style.width = `${rect.right - rect.left}px`;
   border.style.height = `${height}px`;
   border.style.zIndex = link.style.zIndex + 1;
-  
+
   jump.classList.add("--jump");
   border.classList.add("--jump");
 
@@ -98,6 +102,7 @@ function removeLinkJumps() {
  */
 function trigger() {
   const links = allLinksInViewport();
+  /** @type {{ [key: string]:  HTMLElement }} */
   const letters = {};
 
   let letter = 97;
@@ -105,7 +110,7 @@ function trigger() {
 
   for (const link of links) {
     // TODO: implement behaviour for when there's more links than available letters
-    const char = count === 0 ? String.fromCharCode([letter]): `${String.fromCharCode([letter])}${count}`;
+    const char = count === 0 ? String.fromCharCode(letter): `${String.fromCharCode(letter)}${count}`;
     letters[char] = link;
     addLinkJump(link, char);
     letter++;
@@ -116,6 +121,8 @@ function trigger() {
     }
   }
 
+
+  /** @type {(event: KeyboardEvent) => void} */
   let keydownListener = (event) => {
     event.preventDefault();
 
@@ -149,6 +156,6 @@ function trigger() {
     }
   };
 
-  
+
   window.addEventListener("keydown", keydownListener);
 }
