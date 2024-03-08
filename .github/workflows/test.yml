@@ -8,14 +8,12 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
-      - name: Install nvm
-        shell: bash 
-        run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-      - name: Run nvm
-        shell: bash
-        run: nvm install
-      - name: Install Dependencies
-        run: npm install
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install deps
+        run: npm ci
       - name: Build
         run: npm run build
       - name: Test
