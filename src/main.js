@@ -87,7 +87,9 @@ function addLinkJump(link, letter) {
   border.style.zIndex = link.style.zIndex + 1;
 
   jump.classList.add("--jump");
+  jump.classList.add(`--jump-${letter}`);
   border.classList.add("--jump");
+  border.classList.add(`--jump-${letter}`);
 
   document.body.appendChild(jump);
   document.body.appendChild(border);
@@ -99,11 +101,31 @@ function removeLinkJumps() {
 }
 
 /**
+ * Remove all link jumps not starting with `char` from the DOM
+ *
+ * @param {string} char The char which has been pressed so far
+ */
+function hideLinkJumpsNotStartingWith(char) {
+  /** @type {NodeListOf<HTMLElement>} */
+  const elementsToHide = document.querySelectorAll(
+    `.--jump:not([class*="--jump-${char}"])`,
+  );
+  [...elementsToHide].map((x) => (x.style.display = "none"));
+}
+
+function unhideAllLinkJumps() {
+  /** @type {NodeListOf<HTMLElement>} */
+  const allElements = document.querySelectorAll(`.--jump`);
+  [...allElements].map((x) => (x.style.display = "block"));
+}
+
+/**
  * Main function:
  *
  * - Gets all visibile links in the page
  * - Adds a listener for a shortcut for each link
- * - Add a visual indicator for each shortcut for each link
+ * - Add a visual indicator for each shortcut for each link (two letters)
+ * - Removes irrelevant labels when other chars are pressed
  * - Removes listener when user hits Esc
  */
 function trigger() {
@@ -111,24 +133,24 @@ function trigger() {
   /** @type {{ [key: string]: HTMLElement }} */
   const letters = {};
 
+  // start at aa, then to ba..za, then move to ab, bb..zb and so on
   let letter = 97;
-  let count = 0;
+  let secondLetter = 97;
 
   for (const link of links) {
-    // TODO: implement behaviour for when there's more links than available letters
-    const char =
-      count === 0
-        ? String.fromCharCode(letter)
-        : `${String.fromCharCode(letter)}${count}`;
+    const char = String.fromCharCode(letter, secondLetter);
     letters[char] = link;
     addLinkJump(link, char);
-    letter++;
 
+    letter++;
     if (97 + 27 === letter) {
       letter = 97;
-      count++;
+      secondLetter++;
     }
   }
+
+  /** @type {string[]} */
+  let lettersPressedSoFar = [];
 
   /** @type {(event: KeyboardEvent) => void} */
   let keydownListener = (event) => {
@@ -140,6 +162,13 @@ function trigger() {
       removeLinkJumps();
     }
 
+    if (event.key === "Backspace") {
+      unhideAllLinkJumps();
+      lettersPressedSoFar.pop();
+      return;
+    }
+
+    // ignore modifier keys
     if (!String.fromCharCode(event.keyCode).match(/(\w|\s)/g)) {
       return;
     }
@@ -152,9 +181,19 @@ function trigger() {
       key = key.toLowerCase();
     }
 
-    if (letters[key]) {
-      console.log(`Clicking ${key}...`);
-      letters[key].click();
+    lettersPressedSoFar.push(key);
+    const currentString = lettersPressedSoFar.join("");
+
+    // don't trigger til we get both
+    if (lettersPressedSoFar.length < 2) {
+      // but ensure to remove non-relevant shortcuts
+      hideLinkJumpsNotStartingWith(currentString);
+      return;
+    }
+
+    if (letters[currentString]) {
+      console.log(`Clicking ${currentString}...`);
+      letters[currentString].click();
       window.removeEventListener("keydown", keydownListener);
       removeLinkJumps();
     } else {

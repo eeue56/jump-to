@@ -7,10 +7,12 @@ Download the repo. Set up your own [Chrome extension](https://developer.chrome.c
 
 ## TODO
 
-- Handle cases where there's more than 27 links visible on the page
+- Add test suite
 - Add the ability to ctrl-click as a shortcut
 - Provide better instructions for adding it to your browser as your own extension
+- Place labelled elements so they don't collide
+- Distribute labels closer to the home keys vs random letters (maybe?)
 
 ## Current example
 
-![Screenshot 2024-03-07 18 41 32](https://github.com/eeue56/jump-to/assets/1139198/5a965dfc-8576-43fc-9115-c00f6f6b1fb4)
+![Example of trigger](image.png)
