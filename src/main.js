@@ -113,10 +113,28 @@ function hideLinkJumpsNotStartingWith(char) {
   [...elementsToHide].map((x) => (x.style.display = "none"));
 }
 
+/** Unhide all link jumps */
 function unhideAllLinkJumps() {
   /** @type {NodeListOf<HTMLElement>} */
   const allElements = document.querySelectorAll(`.--jump`);
   [...allElements].map((x) => (x.style.display = "block"));
+}
+
+/** Remove a specific link jump */
+/** @param {string} letter */
+function removeLinkJump(letter) {
+  [...document.querySelectorAll(`.--jump-${letter}`)].map((x) => x.remove());
+}
+
+/**
+ * Resize a link jump, by first removing it, then readding it
+ *
+ * @param {HTMLElement} link
+ * @param {string} letter
+ */
+function resizeLinkJump(link, letter) {
+  removeLinkJump(letter);
+  addLinkJump(link, letter);
 }
 
 /**
@@ -152,14 +170,32 @@ function trigger() {
   /** @type {string[]} */
   let lettersPressedSoFar = [];
 
-  /** @type {(event: KeyboardEvent) => void} */
+  /** @type {(event: KeyboardEvent) => boolean | void} */
   let keydownListener = (event) => {
+    if (event.ctrlKey) {
+      // because the viewport might've been resized, resize the
+      // link jumps
+      setTimeout(() => {
+        for (const char of Object.keys(letters)) {
+          const link = letters[char];
+          resizeLinkJump(link, char);
+        }
+      }, 50);
+
+      return true;
+    }
+
     event.preventDefault();
+
+    /** Used to turn the page back to normal, before the extension was activated */
+    function reset() {
+      window.removeEventListener("keydown", keydownListener);
+      removeLinkJumps();
+    }
 
     if (event.key === "Escape") {
       console.log(`Removing listener, got "Esc"`);
-      window.removeEventListener("keydown", keydownListener);
-      removeLinkJumps();
+      reset();
     }
 
     if (event.key === "Backspace") {
@@ -194,13 +230,10 @@ function trigger() {
     if (letters[currentString]) {
       console.log(`Clicking ${currentString}...`);
       letters[currentString].click();
-      window.removeEventListener("keydown", keydownListener);
-      removeLinkJumps();
     } else {
       console.log(`Removing listener, got "${key}"`);
-      window.removeEventListener("keydown", keydownListener);
-      removeLinkJumps();
     }
+    reset();
   };
 
   window.addEventListener("keydown", keydownListener);
