@@ -177,6 +177,15 @@ function trigger() {
   /** @type {string[]} */
   let lettersPressedSoFar = [];
 
+  let scrollListener = () => {
+    // because the viewport might've been moved, reposition the
+    // link jumps
+    for (const char of Object.keys(letters)) {
+      const link = letters[char];
+      resizeLinkJump(link, char);
+    }
+  };
+
   /** @type {(event: KeyboardEvent) => boolean | void} */
   let keydownListener = (event) => {
     if (event.ctrlKey) {
@@ -197,6 +206,7 @@ function trigger() {
     /** Used to turn the page back to normal, before the extension was activated */
     function reset() {
       window.removeEventListener("keydown", keydownListener);
+      window.removeEventListener("scroll", scrollListener);
       removeLinkJumps();
     }
 
@@ -243,6 +253,7 @@ function trigger() {
     reset();
   };
 
+  window.addEventListener("scroll", scrollListener);
   window.addEventListener("keydown", keydownListener);
 }
 
