@@ -1,4 +1,11 @@
 /**
+ * @typedef {object} CustomWindowObject
+ * @property {(event: KeyboardEvent) => void} [_jumpToListener]
+ */
+
+/** @typedef {Window & CustomWindowObject} CustomWindow */
+
+/**
  * Check if the element is visible to the user
  *
  * @param {HTMLElement} element An element in the page
@@ -238,3 +245,35 @@ function trigger() {
 
   window.addEventListener("keydown", keydownListener);
 }
+
+/** @returns {boolean} */
+function isInInput() {
+  /** @type {Element | null} */
+  const element = document.activeElement;
+
+  if (element === null) {
+    return false;
+  }
+
+  const tagName = element.tagName.toLowerCase();
+
+  return tagName == "textarea" || tagName == "input";
+}
+
+function addExtensionListener() {
+  const customWindow = /** @type {CustomWindow} */ (window);
+
+  customWindow._jumpToListener = (event) => {
+    if (isInInput()) {
+      return;
+    }
+
+    if (event.key === "k") {
+      trigger();
+    }
+  };
+
+  window.addEventListener("keydown", customWindow._jumpToListener);
+}
+
+addExtensionListener();

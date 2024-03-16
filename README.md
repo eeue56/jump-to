@@ -3,13 +3,18 @@ A Vimium inspired keyboard shortcut script for browsers. Highlights all clickabl
 
 ## Usage
 
-Download the repo. Set up your own [Chrome extension](https://developer.chrome.com/docs/extensions/get-started), to be triggered by a shortcut and run main.js.
+### Chrome
+
+- Download the repo
+- Run `npm install && npm run build-package`
+- Open the dist/ folder in the repo folder as an extension
+
+You can then active the extension on your current tab with ctrl-b. Once enabled, to show the jump-to options, press "k". You can press Esc to return back to normal, type the first letter to narrow it down, or press backspace to go back to all available links.
 
 ## TODO
 
 - Add test suite
 - Add the ability to ctrl-click as a shortcut
-- Provide better instructions for adding it to your browser as your own extension
 - Place labelled elements so they don't collide
 - Distribute labels closer to the home keys vs random letters (maybe?)
 
