@@ -172,12 +172,17 @@ function trigger() {
       letter = 97;
       secondLetter++;
     }
+
+    // we can only handle aa..zz
+    if (97 + 27 === secondLetter) {
+      break;
+    }
   }
 
   /** @type {string[]} */
-  let lettersPressedSoFar = [];
+  const lettersPressedSoFar = [];
 
-  let scrollListener = () => {
+  const scrollListener = () => {
     // because the viewport might've been moved, reposition the
     // link jumps
     for (const char of Object.keys(letters)) {
@@ -187,7 +192,7 @@ function trigger() {
   };
 
   /** @type {(event: KeyboardEvent) => boolean | void} */
-  let keydownListener = (event) => {
+  const keydownListener = (event) => {
     if (event.ctrlKey) {
       // because the viewport might've been resized, resize the
       // link jumps
