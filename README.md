@@ -49,7 +49,6 @@ This is somewhat represented by this graph:
 
 - Add new link jumps as the user scrolls down the page
 - Detect darkness of site and pick a better border color for links
-- Add test suite
 - Add the ability to ctrl-click as a shortcut
 - Place labelled elements so they don't collide
 - Distribute labels closer to the home keys vs random letters (maybe?)
