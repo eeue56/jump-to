@@ -573,4 +573,6 @@ function addExtensionListener() {
   window.addEventListener("keydown", customWindow._jumpToListener);
 }
 
-addExtensionListener();
+if (window.location.protocol !== "chrome:") {
+  addExtensionListener();
+}
