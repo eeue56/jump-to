@@ -9,6 +9,7 @@
 
 // ----------------
 // General DOM related helpers not specific to this project
+// ----------------
 
 /**
  * Check if the element is visible to the user
@@ -79,6 +80,7 @@ function allLinksInViewport() {
 
 // ----------------
 // DOM helpers for adding, removing, or modifying link jumps
+// ----------------
 
 /**
  * Add a link jump UI element to the page
@@ -248,6 +250,7 @@ function getLinkJumpLetter(link) {
 
 // ----------------
 // Helpers for doing user-input type stuff
+// ----------------
 
 /**
  * Create a letter map from visible elements and add the link jumps to the DOM
@@ -302,6 +305,7 @@ function makeScrollVisualUpdater(letters) {
 
 // ----------------
 // Our functions that get called from the root listener
+// ----------------
 
 /**
  * Runs the regular flow with a given link jump map
@@ -500,6 +504,7 @@ function triggerSearchByInnerText() {
 
 // ----------------
 // Extension-specific code
+// ----------------
 
 /**
  * Adds two listeners:
