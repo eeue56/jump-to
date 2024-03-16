@@ -521,8 +521,10 @@ function addExtensionListener() {
     }
 
     if (event.key === "k") {
+      event.preventDefault();
       triggerRegularFlow();
     } else if (event.key === "/") {
+      event.preventDefault();
       triggerSearchByInnerText();
     }
   };

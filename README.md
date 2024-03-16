@@ -11,7 +11,7 @@ A Vimium inspired keyboard shortcut script for browsers. Highlights all clickabl
 
 ### Shorcuts
 
-- ctrl-b: enable / disable the extension.
+- Ctrl-b: enable / disable the extension.
 - k: click on links by typing their randomly generated two letter ids. Type the first letter to narrow it down.
 - /: click on links by searching for the contents of their innerText. Type the string to narrow it down, automatically clicking once one link-jump is left.
 - Backspace when there's current input: go back one step.
