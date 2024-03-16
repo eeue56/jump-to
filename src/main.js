@@ -1,9 +1,14 @@
 /**
  * @typedef {object} CustomWindowObject
  * @property {(event: KeyboardEvent) => void} [_jumpToListener]
+ *
+ * @typedef {{ [key: string]: HTMLElement }} LinkJumpMap
  */
 
 /** @typedef {Window & CustomWindowObject} CustomWindow */
+
+// ----------------
+// General DOM related helpers not specific to this project
 
 /**
  * Check if the element is visible to the user
@@ -33,6 +38,20 @@ function elementIsVisibleInViewport(element) {
   );
 }
 
+/** @returns {boolean} */
+function isInInput() {
+  /** @type {Element | null} */
+  const element = document.activeElement;
+
+  if (element === null) {
+    return false;
+  }
+
+  const tagName = element.tagName.toLowerCase();
+
+  return tagName == "textarea" || tagName == "input";
+}
+
 /**
  * Checks if the element is a link and visible
  *
@@ -57,6 +76,9 @@ function allLinksInViewport() {
   const allElements = document.querySelectorAll("body *");
   return [...allElements].filter(isVisibleLink);
 }
+
+// ----------------
+// DOM helpers for adding, removing, or modifying link jumps
 
 /**
  * Add a link jump UI element to the page
@@ -98,6 +120,7 @@ function addLinkJump(link, letter) {
 
   jump.classList.add("--jump");
   jump.classList.add(`--jump-${letter}`);
+  jump.classList.add("--jump-link");
   border.classList.add("--jump");
   border.classList.add(`--jump-${letter}`);
 
@@ -111,7 +134,18 @@ function removeLinkJumps() {
 }
 
 /**
- * Remove all link jumps not starting with `char` from the DOM
+ * Hide all link jumps with id `letter` from the DOM
+ *
+ * @param {string} letter The letter id
+ */
+function hideLinkJumpWithLetter(letter) {
+  /** @type {NodeListOf<HTMLElement>} */
+  const elementsToHide = document.querySelectorAll(`.--jump-${letter}`);
+  [...elementsToHide].map((x) => (x.style.display = "none"));
+}
+
+/**
+ * Hide all link jumps not starting with `char` from the DOM
  *
  * @param {string} char The char which has been pressed so far
  */
@@ -123,11 +157,56 @@ function hideLinkJumpsNotStartingWith(char) {
   [...elementsToHide].map((x) => (x.style.display = "none"));
 }
 
+/**
+ * Hide all link jumps not containing `search` from the DOM
+ *
+ * @param {LinkJumpMap} letters
+ * @param {string} search The search string to find
+ */
+function hideLinkJumpsNotContaining(letters, search) {
+  for (const letter of Object.keys(letters)) {
+    const link = letters[letter];
+
+    if (!link.innerText.toLowerCase().includes(search)) {
+      hideLinkJumpWithLetter(letter);
+    }
+  }
+}
+
 /** Unhide all link jumps */
 function unhideAllLinkJumps() {
   /** @type {NodeListOf<HTMLElement>} */
   const allElements = document.querySelectorAll(`.--jump`);
   [...allElements].map((x) => (x.style.display = "block"));
+}
+
+/**
+ * Unhide a specific link jumps
+ *
+ * @param {string} letter
+ */
+function unhideLinkJumpWithLetter(letter) {
+  /** @type {NodeListOf<HTMLElement>} */
+  const allElements = document.querySelectorAll(`.--jump-${letter}`);
+  [...allElements].map((x) => (x.style.display = "block"));
+}
+
+/**
+ * Make sure visiblty of link jumps matches what it should
+ *
+ * @param {LinkJumpMap} letters
+ * @param {string} search The search string that is active
+ */
+function syncHiddenStateOfLinkJumpsBySearch(letters, search) {
+  for (const letter of Object.keys(letters)) {
+    const link = letters[letter];
+
+    if (link.innerText.toLowerCase().includes(search)) {
+      unhideLinkJumpWithLetter(letter);
+    } else {
+      hideLinkJumpWithLetter(letter);
+    }
+  }
 }
 
 /** Remove a specific link jump */
@@ -148,17 +227,36 @@ function resizeLinkJump(link, letter) {
 }
 
 /**
- * Main function:
+ * Get the visible link jump elements
  *
- * - Gets all visibile links in the page
- * - Adds a listener for a shortcut for each link
- * - Add a visual indicator for each shortcut for each link (two letters)
- * - Removes irrelevant labels when other chars are pressed
- * - Removes listener when user hits Esc
+ * @returns {HTMLElement[]}
  */
-function trigger() {
+function getVisibleLinkJumps() {
+  /** @type {NodeListOf<HTMLElement>} */
+  const elements = document.querySelectorAll(`.--jump-link`);
+
+  return [...elements].filter((element) => element.style.display !== "none");
+}
+
+/**
+ * @param {HTMLElement} link
+ * @returns {string}
+ */
+function getLinkJumpLetter(link) {
+  return link.className.split(" ")[1].split("--jump-")[1];
+}
+
+// ----------------
+// Helpers for doing user-input type stuff
+
+/**
+ * Create a letter map from visible elements and add the link jumps to the DOM
+ *
+ * @returns {LinkJumpMap}
+ */
+function makeLetterMap() {
   const links = allLinksInViewport();
-  /** @type {{ [key: string]: HTMLElement }} */
+  /** @type {LinkJumpMap} */
   const letters = {};
 
   // start at aa, then to ba..za, then move to ab, bb..zb and so on
@@ -182,10 +280,17 @@ function trigger() {
     }
   }
 
-  /** @type {string[]} */
-  const lettersPressedSoFar = [];
+  return letters;
+}
 
-  const scrollListener = () => {
+/**
+ * Create a listener that updates link jumps visually as the user scrolls
+ *
+ * @param {LinkJumpMap} letters
+ * @returns {() => void}
+ */
+function makeScrollVisualUpdater(letters) {
+  return () => {
     // because the viewport might've been moved, reposition the
     // link jumps
     for (const char of Object.keys(letters)) {
@@ -193,6 +298,20 @@ function trigger() {
       resizeLinkJump(link, char);
     }
   };
+}
+
+// ----------------
+// Our functions that get called from the root listener
+
+/**
+ * Runs the regular flow with a given link jump map
+ *
+ * @param {LinkJumpMap} letters
+ */
+function regularFlow(letters) {
+  /** @type {string[]} */
+  const lettersPressedSoFar = [];
+  const scrollListener = makeScrollVisualUpdater(letters);
 
   /** @type {(event: KeyboardEvent) => boolean | void} */
   const keydownListener = (event) => {
@@ -224,6 +343,10 @@ function trigger() {
     }
 
     if (event.key === "Backspace") {
+      if (lettersPressedSoFar.length === 0) {
+        reset();
+        return;
+      }
       unhideAllLinkJumps();
       lettersPressedSoFar.pop();
       return;
@@ -265,30 +388,142 @@ function trigger() {
   window.addEventListener("keydown", keydownListener);
 }
 
-/** @returns {boolean} */
-function isInInput() {
-  /** @type {Element | null} */
-  const element = document.activeElement;
-
-  if (element === null) {
-    return false;
-  }
-
-  const tagName = element.tagName.toLowerCase();
-
-  return tagName == "textarea" || tagName == "input";
+/**
+ * - Gets all visibile links in the page
+ * - Adds a listener for a shortcut for each link
+ * - Add a visual indicator for each shortcut for each link (two letters)
+ * - Removes irrelevant labels when other chars are pressed
+ * - Removes listener when user hits Esc
+ */
+function triggerRegularFlow() {
+  const letters = makeLetterMap();
+  regularFlow(letters);
 }
 
+/**
+ * - Gets all visibile links in the page
+ * - Adds a listener for a shortcut for each link
+ * - Add a visual indicator for each shortcut for each link (two letters)
+ * - Allows the user to type a search string to search the innerText of elements
+ *   for
+ * - Removes irrelevant labels when other chars are pressed
+ * - Removes listener when user hits Esc
+ */
+function triggerSearchByInnerText() {
+  const letters = makeLetterMap();
+
+  /** @type {string[]} */
+  const searchString = [];
+
+  const scrollListener = makeScrollVisualUpdater(letters);
+
+  /** @type {(event: KeyboardEvent) => boolean | void} */
+  const keydownListener = (event) => {
+    if (event.ctrlKey) {
+      // because the viewport might've been resized, resize the
+      // link jumps
+      setTimeout(() => {
+        for (const char of Object.keys(letters)) {
+          const link = letters[char];
+          resizeLinkJump(link, char);
+        }
+      }, 50);
+
+      return true;
+    }
+
+    event.preventDefault();
+
+    /** Used to turn the page back to normal, before the extension was activated */
+    function reset() {
+      window.removeEventListener("keydown", keydownListener);
+      window.removeEventListener("scroll", scrollListener);
+      removeLinkJumps();
+    }
+
+    if (event.key === "Escape") {
+      console.log(`Removing listener, got "Esc"`);
+      reset();
+    }
+
+    if (event.key === "Backspace") {
+      if (searchString.length === 0) {
+        reset();
+        return;
+      }
+      searchString.pop();
+      const currentString = searchString.join("");
+      syncHiddenStateOfLinkJumpsBySearch(letters, currentString);
+      return;
+    }
+
+    // switch over to regular link-selection mode
+    if (event.key === "Enter") {
+      window.removeEventListener("keydown", keydownListener);
+      window.removeEventListener("scroll", scrollListener);
+      regularFlow(letters);
+      return;
+    }
+
+    // ignore modifier keys
+    if (!String.fromCharCode(event.keyCode).match(/(\w|\s)/g)) {
+      return;
+    }
+
+    let key = String.fromCharCode(event.keyCode).toLowerCase();
+
+    searchString.push(key);
+    const currentString = searchString.join("");
+
+    // ensure to remove non-relevant shortcuts
+    hideLinkJumpsNotContaining(letters, currentString);
+
+    const visibileLinkJumps = getVisibleLinkJumps();
+
+    if (visibileLinkJumps.length === 0) {
+      console.log(
+        `Couldn't find anything matching ${currentString}, exiting...`,
+      );
+      reset();
+    } else if (visibileLinkJumps.length === 1) {
+      // we only have 1 left, so we know it's what we want
+      console.log(`Clicking ${currentString}...`);
+      const letter = getLinkJumpLetter(visibileLinkJumps[0]);
+      letters[letter].click();
+      reset();
+    }
+  };
+
+  window.addEventListener("scroll", scrollListener);
+  window.addEventListener("keydown", keydownListener);
+}
+
+// ----------------
+// Extension-specific code
+
+/**
+ * Adds two listeners:
+ *
+ * - One triggered by `k`, to click links by a random id generated
+ * - Another triggered by `/`, to allow users to search the text of links for a
+ *   certain string
+ */
 function addExtensionListener() {
   const customWindow = /** @type {CustomWindow} */ (window);
 
+  /**
+   * @param {KeyboardEvent} event
+   * @returns {void}
+   */
   customWindow._jumpToListener = (event) => {
     if (isInInput()) {
       return;
     }
 
     if (event.key === "k") {
-      trigger();
+      triggerRegularFlow();
+    } else if (event.key === "/") {
+      triggerSearchByInnerText();
     }
   };
 
