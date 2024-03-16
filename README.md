@@ -13,6 +13,7 @@ A Vimium inspired keyboard shortcut script for browsers. Highlights all clickabl
 
 - Ctrl-b: enable / disable the extension.
 - k: click on links by typing their randomly generated two letter ids. Type the first letter to narrow it down.
+- h: same as k, but only highlight links containing "comment", for link aggregator sites like Reddit, HN, and Lobsters
 - /: click on links by searching for the contents of their innerText. Type the string to narrow it down, automatically clicking once one link-jump is left.
 - Backspace when there's current input: go back one step.
 - Backspace when no current input / Esc: exit link jump mode, return to normal.
@@ -22,9 +23,11 @@ This is somewhat represented by this graph:
 
 ```mermaid
     flowchart TB
-        A(Ctrl-B) --> B(k) & V(/)
+        A(Ctrl-B) --> B(k) & V(/) & F(h)
 
         B(k) --> C(ab..zz ids)
+
+        F -- comments --> C
         C -- Esc, Backspace --> A
         C -- Press a --> D(only shows those beginning with a)
         D -- Backspace --> C

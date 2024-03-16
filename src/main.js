@@ -78,6 +78,16 @@ function allLinksInViewport() {
   return [...allElements].filter(isVisibleLink);
 }
 
+/**
+ * Gets a list of comments in the DOM, if the page is a link aggregator
+ *
+ * @returns {HTMLElement[]}
+ */
+function allCommentLinksInViewport() {
+  /** @type {NodeListOf<HTMLElement>} */
+  return allLinksInViewport().filter((x) => x.innerText.includes("comment"));
+}
+
 // ----------------
 // DOM helpers for adding, removing, or modifying link jumps
 // ----------------
@@ -263,10 +273,10 @@ function getLinkJumpLetter(link) {
 /**
  * Create a letter map from visible elements and add the link jumps to the DOM
  *
+ * @param {HTMLElement[]} links
  * @returns {LinkJumpMap}
  */
-function makeLetterMap() {
-  const links = allLinksInViewport();
+function makeLetterMap(links) {
   /** @type {LinkJumpMap} */
   const letters = {};
 
@@ -408,7 +418,14 @@ function regularFlow(letters) {
  * - Removes listener when user hits Esc
  */
 function triggerRegularFlow() {
-  const letters = makeLetterMap();
+  const links = allLinksInViewport();
+  const letters = makeLetterMap(links);
+  regularFlow(letters);
+}
+
+function triggerLinkAggregatorFlow() {
+  const links = allCommentLinksInViewport();
+  const letters = makeLetterMap(links);
   regularFlow(letters);
 }
 
@@ -422,7 +439,8 @@ function triggerRegularFlow() {
  * - Removes listener when user hits Esc
  */
 function triggerSearchByInnerText() {
-  const letters = makeLetterMap();
+  const links = allLinksInViewport();
+  const letters = makeLetterMap(links);
 
   /** @type {string[]} */
   const searchString = [];
@@ -515,9 +533,11 @@ function triggerSearchByInnerText() {
 // ----------------
 
 /**
- * Adds two listeners:
+ * Adds three listeners:
  *
  * - One triggered by `k`, to click links by a random id generated
+ * - One triggered by `h`, to click links to comments (e.g on HN/Reddit/Lobsters)
+ *   by a random id generated
  * - Another triggered by `/`, to allow users to search the text of links for a
  *   certain string
  */
@@ -539,6 +559,9 @@ function addExtensionListener() {
     } else if (event.key === "/") {
       event.preventDefault();
       triggerSearchByInnerText();
+    } else if (event.key === "h") {
+      event.preventDefault();
+      triggerLinkAggregatorFlow();
     }
   };
 
