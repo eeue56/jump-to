@@ -160,6 +160,14 @@ function hideLinkJumpsNotStartingWith(char) {
 }
 
 /**
+ * @param {string} text
+ * @returns {string}
+ */
+function simplifyText(text) {
+  return text.replace("–", "-");
+}
+
+/**
  * Hide all link jumps not containing `search` from the DOM
  *
  * @param {LinkJumpMap} letters
@@ -169,7 +177,7 @@ function hideLinkJumpsNotContaining(letters, search) {
   for (const letter of Object.keys(letters)) {
     const link = letters[letter];
 
-    if (!link.innerText.toLowerCase().includes(search)) {
+    if (!simplifyText(link.innerText.toLowerCase()).includes(search)) {
       hideLinkJumpWithLetter(letter);
     }
   }
@@ -272,13 +280,13 @@ function makeLetterMap() {
     addLinkJump(link, char);
 
     letter++;
-    if (97 + 27 === letter) {
+    if (97 + 26 === letter) {
       letter = 97;
       secondLetter++;
     }
 
     // we can only handle aa..zz
-    if (97 + 27 === secondLetter) {
+    if (97 + 26 === secondLetter) {
       break;
     }
   }
@@ -470,11 +478,11 @@ function triggerSearchByInnerText() {
     }
 
     // ignore modifier keys
-    if (!String.fromCharCode(event.keyCode).match(/(\w|\s)/g)) {
+    if (event.ctrlKey || event.metaKey || event.shiftKey) {
       return;
     }
 
-    let key = String.fromCharCode(event.keyCode).toLowerCase();
+    let key = event.key.toLowerCase();
 
     searchString.push(key);
     const currentString = searchString.join("");
