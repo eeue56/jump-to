@@ -10,7 +10,9 @@ export const test = base.extend({
         // `--headless=new`,
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
+        "--disable-infobars",
       ],
+      ignoreDefaultArgs: ["--enable-automation"],
       viewport: { width: 1280, height: 720 },
     });
     await use(context);

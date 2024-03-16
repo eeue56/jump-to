@@ -1,6 +1,159 @@
 
-<html lang="en" op="news"><head><meta name="referrer" content="origin"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" type="text/css" href="./link_aggregator.css">
-    <link rel="icon" href="y18.svg">
+<html lang="en" op="news"><head><meta name="referrer" content="origin"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body  { font-size:10pt; color:#828282; }
+        td    { font-size:10pt; color:#828282; }
+
+        .admin td   { font-size:8.5pt; color:#000000; }
+        .subtext td { font-size:  7pt; color:#828282; }
+
+        input    { font-size:10pt; }
+        input[type=\"submit\"] { }
+        textarea { font-size:10pt; resize:both; }
+
+        a:link    { color:#000000; text-decoration:none; }
+        a:visited { color:#828282; text-decoration:none; }
+
+        .default { font-size: 10pt; color:#828282; }
+        .admin   { font-size:8.5pt; color:#000000; }
+        .title   { font-size: 10pt; color:#828282; overflow:hidden; }
+        .subtext { font-size:  7pt; color:#828282; }
+        .yclinks { font-size:  8pt; color:#828282; }
+        .pagetop { font-size: 10pt; color:#222222; line-height:12px; }
+        .comhead { font-size:  8pt; color:#828282; }
+        .comment { font-size:  9pt; }
+        .hnname  { margin-left:1px; margin-right: 5px; }
+
+        #hnmain { min-width: 796px; }
+
+        .title a { word-break: break-word; }
+
+        .comment a:link, .comment a:visited { text-decoration: underline; }
+        .noshow { display: none; }
+        .nosee { visibility: hidden; pointer-events: none; cursor: default }
+
+        .c00, .c00 a:link { color:#000000; }
+        .c5a, .c5a a:link, .c5a a:visited { color:#5a5a5a; }
+        .c73, .c73 a:link, .c73 a:visited { color:#737373; }
+        .c82, .c82 a:link, .c82 a:visited { color:#828282; }
+        .c88, .c88 a:link, .c88 a:visited { color:#888888; }
+        .c9c, .c9c a:link, .c9c a:visited { color:#9c9c9c; }
+        .cae, .cae a:link, .cae a:visited { color:#aeaeae; }
+        .cbe, .cbe a:link, .cbe a:visited { color:#bebebe; }
+        .cce, .cce a:link, .cce a:visited { color:#cecece; }
+        .cdd, .cdd a:link, .cdd a:visited { color:#dddddd; }
+        .ca2 { color:#a30000; }
+
+        .pagetop a:visited { color:#000000;}
+        .topsel a:link, .topsel a:visited { color:#ffffff; }
+
+        .subtext a:link, .subtext a:visited { color:#828282; }
+        .subtext a:hover { text-decoration:underline; }
+
+        .comhead a:link, .subtext a:visited { color:#828282; }
+        .comhead a:hover { text-decoration:underline; }
+
+        .hnmore a:link, a:visited { color:#828282; }
+        .hnmore { text-decoration:underline; }
+
+        .default p { margin-top: 8px; margin-bottom: 0px; }
+
+        .pagebreak {page-break-before:always}
+
+        pre { overflow: auto; padding: 2px; white-space: pre-wrap; overflow-wrap:anywhere; }
+        pre:hover { overflow:auto }
+
+        .votearrow {
+        width:      10px;
+        height:     10px;
+        border:     0px;
+        margin:     3px 2px 6px;
+        background-size: 10px;
+        }
+
+        .votelinks.nosee div.votearrow.rotate180 {
+        display: none;
+        }
+
+        table.padtab td { padding:0px 10px }
+
+        @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+        .votearrow {
+            background-size: 10px;
+        }
+        }
+
+        .rotate180 {
+        -webkit-transform: rotate(180deg);  /* Chrome and other webkit browsers */
+        -moz-transform:    rotate(180deg);  /* FF */
+        -o-transform:      rotate(180deg);  /* Opera */
+        -ms-transform:     rotate(180deg);  /* IE9 */
+        transform:         rotate(180deg);  /* W3C complaint browsers */
+        }
+
+        /* mobile device */
+        @media only screen
+        and (min-width : 300px)
+        and (max-width : 750px) {
+        #hnmain { width: 100%; min-width: 0; }
+        body { padding: 0; margin: 0; width: 100%; }
+        td { height: inherit !important; }
+        .title, .comment { font-size: inherit;  }
+        span.pagetop { display: block; margin: 3px 5px; font-size: 12px; line-height: normal }
+        span.pagetop b { display: block; font-size: 15px; }
+        table.comment-tree .comment a { display: inline-block; max-width: 200px; overflow: hidden; white-space: nowrap;
+            text-overflow: ellipsis; vertical-align:top; }
+        .title { font-size: 11pt; line-height: 14pt;  }
+        .subtext { font-size: 9pt; }
+        .votearrow { transform: scale(1.3,1.3); margin-right: 6px; }
+        .votearrow.rotate180 {
+            -webkit-transform: rotate(180deg) scale(1.3,1.3);  /* Chrome and other webkit browsers */
+            -moz-transform:    rotate(180deg) scale(1.3,1.3);  /* FF */
+            -o-transform:      rotate(180deg) scale(1.3,1.3);  /* Opera */
+            -ms-transform:     rotate(180deg) scale(1.3,1.3);  /* IE9 */
+            transform:         rotate(180deg) scale(1.3,1.3);  /* W3C complaint browsers */
+        }
+        .votelinks { min-width: 18px; }
+        .votelinks a { display: block; margin-bottom: 9px; }
+        input[type='text'], input[type='number'], textarea { font-size: 16px; width: 90%; }
+        }
+
+        .comment { max-width: 1215px; overflow-wrap:anywhere; }
+
+
+
+        @media only screen and (min-width : 300px) and (max-width : 389px) {
+        .comment { max-width: 270px; overflow: hidden }
+        }
+        @media only screen and (min-width : 390px) and (max-width : 509px) {
+        .comment { max-width: 350px; overflow: hidden }
+        }
+        @media only screen and (min-width : 510px) and (max-width : 599px) {
+        .comment { max-width: 460px; overflow: hidden }
+        }
+        @media only screen and (min-width : 600px) and (max-width : 689px) {
+        .comment { max-width: 540px; overflow: hidden }
+        }
+        @media only screen and (min-width : 690px) and (max-width : 809px) {
+        .comment { max-width: 620px; overflow: hidden }
+        }
+        @media only screen and (min-width : 810px) and (max-width : 899px) {
+        .comment { max-width: 730px; overflow: hidden }
+        }
+        @media only screen and (min-width : 900px) and (max-width : 1079px) {
+        .comment { max-width: 810px; overflow: hidden }
+        }
+        @media only screen and (min-width : 1080px) and (max-width : 1169px) {
+        .comment { max-width: 970px; overflow: hidden }
+        }
+        @media only screen and (min-width : 1170px) and (max-width : 1259px) {
+        .comment { max-width: 1050px; overflow: hidden }
+        }
+        @media only screen and (min-width : 1260px) and (max-width : 1349px) {
+        .comment { max-width: 1130px; overflow: hidden }
+        }
+    </style>
+
               <link rel="alternate" type="application/rss+xml" title="RSS" href="rss">
     <title>Hacker News</title></head><body><center><table id="hnmain" border="0" cellpadding="0" cellspacing="0" width="85%" bgcolor="#f6f6ef">
     <tr><td bgcolor="#ff6600"><table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:2px"><tr><td style="width:18px;padding-right:4px"><a href="https://news.ycombinator.com"><img src="y18.svg" width="18" height="18" style="border:1px white solid; display:block"></a></td>
@@ -126,7 +279,7 @@
           </td></tr>
   <tr class="spacer" style="height:5px"></tr>
             <tr class='athing' id='39721526'>
-  <td align="right" valign="top" class="title"><span class="rank">24.</span></td>      <td><img src="s.gif" height="1" width="14"></td>       <td class="title"><span class="titleline"><a href="https://www.workatastartup.com/jobs/55496" rel="nofollow">Doola (YC S20) Is Hiring a Director of Finance</a><span class="sitebit comhead"> (<a href="from?site=workatastartup.com"><span class="sitestr">workatastartup.com</span></a>)</span></span></td></tr><tr><td colspan="2"></td><td class="subtext">
+  <td align="right" valign="top" class="title"><span class="rank">24.</span></td>      <td></td>       <td class="title"><span class="titleline"><a href="https://www.workatastartup.com/jobs/55496" rel="nofollow">Doola (YC S20) Is Hiring a Director of Finance</a><span class="sitebit comhead"> (<a href="from?site=workatastartup.com"><span class="sitestr">workatastartup.com</span></a>)</span></span></td></tr><tr><td colspan="2"></td><td class="subtext">
     <span class="age" title="2024-03-15T22:54:02"><a href="#item?id=39721526">15 hours ago</a></span> | <a href="hide?id=39721526&amp;goto=news">hide</a>      </td></tr>
   <tr class="spacer" style="height:5px"></tr>
             <tr class='athing' id='39714053'>
@@ -163,7 +316,7 @@
   <td class='title'><a href='?p=2' class='morelink' rel='next'>More</a></td>    </tr>
 </table>
 </td></tr>
-<tr><td><img src="s.gif" height="10" width="0"><table width="100%" cellspacing="0" cellpadding="1"><tr><td bgcolor="#ff6600"></td></tr></table><br>
+<tr><td><table width="100%" cellspacing="0" cellpadding="1"><tr><td bgcolor="#ff6600"></td></tr></table><br>
 <center><span class="yclinks"><a href="newsguidelines.html">Guidelines</a> | <a href="newsfaq.html">FAQ</a> | <a href="lists">Lists</a> | <a href="https://github.com/HackerNews/API">API</a> | <a href="security.html">Security</a> | <a href="https://www.ycombinator.com/legal/">Legal</a> | <a href="https://www.ycombinator.com/apply/">Apply to YC</a> | <a href="mailto:hn@ycombinator.com">Contact</a></span><br><br>
 <form method="get" action="//hn.algolia.com/">Search: <input type="text" name="q" size="17" autocorrect="off" spellcheck="false" autocapitalize="off" autocomplete="false"></form></center></td></tr>      </table></center></body>
   <script type='text/javascript' src='hn.js?ShVrxTaRf6fYO8T6BrXd'></script>

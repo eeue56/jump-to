@@ -17,106 +17,119 @@ async function getVisibleJumps(page) {
 }
 
 test("search (/)", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+
   const url = new URL(
     join(__dirname, "examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
 
+  console.log(page.viewportSize());
+  console.log(await page.locator("body").boundingBox());
+
   await page.keyboard.down("/");
   let jumpLinks = await page.locator(".--jump").all();
-  expect(jumpLinks).toHaveLength(286);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(162);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(8);
+  expect.soft(jumpLinks).toHaveLength(8);
 
   await page.keyboard.press("n");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(4);
+  expect.soft(jumpLinks).toHaveLength(4);
 
   await page.keyboard.press("g");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(4);
+  expect.soft(jumpLinks).toHaveLength(4);
 
   await page.keyboard.press("l");
   await expect(page).toHaveURL(/.*user\?id=single_cloud/);
 });
 
 test("search (/) => Backspace", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
     join(__dirname, "examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
 
+  console.log(page.viewportSize());
+  console.log(await page.locator("body").boundingBox());
+
   await page.keyboard.down("/");
   let jumpLinks = await page.locator(".--jump").all();
-  expect(jumpLinks).toHaveLength(286);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(162);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(8);
+  expect.soft(jumpLinks).toHaveLength(8);
 
   await page.keyboard.press("n");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(4);
+  expect.soft(jumpLinks).toHaveLength(4);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(8);
+  expect.soft(jumpLinks).toHaveLength(8);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(162);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(286);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await page.locator(".--jump").all();
-  expect(jumpLinks).toHaveLength(0);
+  expect.soft(jumpLinks).toHaveLength(0);
 });
 
 test("search (/) => Enter", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
     join(__dirname, "examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
 
+  console.log(page.viewportSize());
+  console.log(await page.locator("body").boundingBox());
+
   await page.keyboard.down("/");
   let jumpLinks = await page.locator(".--jump").all();
-  expect(jumpLinks).toHaveLength(286);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(162);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(8);
+  expect.soft(jumpLinks).toHaveLength(8);
 
   await page.keyboard.press("n");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(4);
+  expect.soft(jumpLinks).toHaveLength(4);
 
   await page.keyboard.press("Enter");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(4);
+  expect.soft(jumpLinks).toHaveLength(4);
 
   await page.keyboard.press("b");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(2);
+  expect.soft(jumpLinks).toHaveLength(2);
 
   await page.keyboard.press("b");
 
@@ -124,46 +137,54 @@ test("search (/) => Enter", async ({ page }) => {
 });
 
 test("comments (h)", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
     join(__dirname, "examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
 
+  console.log(page.viewportSize());
+  console.log(await page.locator("body").boundingBox());
+
   await page.keyboard.down("h");
   let jumpLinks = await page.locator(".--jump").all();
-  expect(jumpLinks).toHaveLength(36);
+  expect.soft(jumpLinks).toHaveLength(38);
 
   await page.keyboard.press("c");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(2);
+  expect.soft(jumpLinks).toHaveLength(2);
 
   await page.keyboard.press("a");
   await expect(page).toHaveURL(/.*item\?id=39726156/);
 });
 
 test("comments (h) => Backspace", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
     join(__dirname, "examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
 
+  console.log(page.viewportSize());
+  console.log(await page.locator("body").boundingBox());
+
   await page.keyboard.down("h");
   let jumpLinks = await page.locator(".--jump").all();
-  expect(jumpLinks).toHaveLength(36);
+  expect.soft(jumpLinks).toHaveLength(38);
 
   await page.keyboard.press("c");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(2);
+  expect.soft(jumpLinks).toHaveLength(2);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(36);
+  expect.soft(jumpLinks).toHaveLength(38);
 
   await page.keyboard.press("c");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(2);
+  expect.soft(jumpLinks).toHaveLength(2);
 
   await page.keyboard.press("a");
   await expect(page).toHaveURL(/.*item\?id=39726156/);
@@ -175,14 +196,21 @@ test("jump-to (k)", async ({ page }) => {
     "file://",
   );
   await page.goto(url.toString());
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.evaluate(() => {
+    window.scrollTo(0, 0);
+  });
+  await page.waitForFunction(() => window.scrollY === 0);
+  console.log(page.viewportSize());
+  console.log(await page.locator("body").boundingBox());
 
   await page.keyboard.down("k");
   let jumpLinks = await page.locator(".--jump").all();
-  expect(jumpLinks).toHaveLength(286);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("c");
   jumpLinks = await getVisibleJumps(page);
-  expect(jumpLinks).toHaveLength(12);
+  expect.soft(jumpLinks).toHaveLength(12);
 
   await page.keyboard.press("a");
   await expect(page).toHaveURL(/.*newest/);

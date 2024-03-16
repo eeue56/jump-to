@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig } from "@playwright/test";
 
 /** Read environment variables from file. https://github.com/motdotla/dotenv */
 // require('dotenv').config();
@@ -29,7 +29,9 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        viewport: { width: 1280, height: 720 },
+      },
     },
 
     /* Test against mobile viewports. */
