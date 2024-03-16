@@ -72,12 +72,15 @@ function addLinkJump(link, letter) {
 
   const str = document.createElement("strong");
   str.innerText = letter;
-  str.style.backgroundColor = "white";
+  str.style.color = "black";
+  str.style.backgroundColor = "#ffff6e";
+  str.style.paddingLeft = "3px";
+  str.style.paddingRight = "3px";
   jump.appendChild(str);
 
   jump.style.position = "absolute";
   jump.style.left = `${rect.left + window.scrollX - 20}px`;
-  jump.style.top = `${rect.top + window.scrollY + height / 2 - 10}px`;
+  jump.style.top = `${rect.bottom + window.scrollY}px`;
   jump.style.width = "50px";
   jump.style.height = "30px";
   jump.style.fontSize = "20px";

@@ -14,6 +14,7 @@ You can then active the extension on your current tab with ctrl-b. Once enabled,
 ## TODO
 
 - Add new link jumps as the user scrolls down the page
+- Detect darkness of site and pick a better border color for links
 - Add test suite
 - Add the ability to ctrl-click as a shortcut
 - Place labelled elements so they don't collide
