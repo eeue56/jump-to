@@ -50,6 +50,11 @@ function isInInput() {
 
   const tagName = element.tagName.toLowerCase();
 
+  const htmlElement = /** @type {HTMLElement} */ (element);
+  if (htmlElement.isContentEditable) {
+    return true;
+  }
+
   return tagName == "textarea" || tagName == "input";
 }
 
