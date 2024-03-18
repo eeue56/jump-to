@@ -558,6 +558,10 @@ function addExtensionListener() {
       return;
     }
 
+    if (event.ctrlKey || event.metaKey || event.shiftKey) {
+      return;
+    }
+
     if (event.key === "k") {
       event.preventDefault();
       triggerRegularFlow();
