@@ -107,6 +107,9 @@ function addLinkJump(link, letter) {
   const rect = link.getBoundingClientRect();
   const height = rect.bottom - rect.top;
 
+  const offsetX = 20;
+  const wouldBeOffTheLeftScreen = rect.x - offsetX < 0;
+
   const jump = document.createElement("div");
 
   const str = document.createElement("strong");
@@ -118,7 +121,9 @@ function addLinkJump(link, letter) {
   jump.appendChild(str);
 
   jump.style.position = "absolute";
-  jump.style.left = `${rect.left + window.scrollX - 20}px`;
+  jump.style.left = wouldBeOffTheLeftScreen
+    ? `${rect.right + window.scrollX}px`
+    : `${rect.left + window.scrollX - offsetX}px`;
   jump.style.top = `${rect.bottom + window.scrollY}px`;
   jump.style.width = "50px";
   jump.style.height = "30px";
