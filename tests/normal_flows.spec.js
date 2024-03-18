@@ -25,9 +25,6 @@ test("search (/)", async ({ page }) => {
   );
   await page.goto(url.toString());
 
-  console.log(page.viewportSize());
-  console.log(await page.locator("body").boundingBox());
-
   await page.keyboard.down("/");
   let jumpLinks = await page.locator(".--jump").all();
   expect.soft(jumpLinks).toHaveLength(300);
@@ -59,9 +56,6 @@ test("search (/) => Backspace", async ({ page }) => {
     "file://",
   );
   await page.goto(url.toString());
-
-  console.log(page.viewportSize());
-  console.log(await page.locator("body").boundingBox());
 
   await page.keyboard.down("/");
   let jumpLinks = await page.locator(".--jump").all();
@@ -104,9 +98,6 @@ test("search (/) => Enter", async ({ page }) => {
   );
   await page.goto(url.toString());
 
-  console.log(page.viewportSize());
-  console.log(await page.locator("body").boundingBox());
-
   await page.keyboard.down("/");
   let jumpLinks = await page.locator(".--jump").all();
   expect.soft(jumpLinks).toHaveLength(300);
@@ -144,9 +135,6 @@ test("comments (h)", async ({ page }) => {
   );
   await page.goto(url.toString());
 
-  console.log(page.viewportSize());
-  console.log(await page.locator("body").boundingBox());
-
   await page.keyboard.down("h");
   let jumpLinks = await page.locator(".--jump").all();
   expect.soft(jumpLinks).toHaveLength(38);
@@ -166,9 +154,6 @@ test("comments (h) => Backspace", async ({ page }) => {
     "file://",
   );
   await page.goto(url.toString());
-
-  console.log(page.viewportSize());
-  console.log(await page.locator("body").boundingBox());
 
   await page.keyboard.down("h");
   let jumpLinks = await page.locator(".--jump").all();
@@ -196,13 +181,6 @@ test("jump-to (k)", async ({ page }) => {
     "file://",
   );
   await page.goto(url.toString());
-  await page.setViewportSize({ width: 1280, height: 720 });
-  await page.evaluate(() => {
-    window.scrollTo(0, 0);
-  });
-  await page.waitForFunction(() => window.scrollY === 0);
-  console.log(page.viewportSize());
-  console.log(await page.locator("body").boundingBox());
 
   await page.keyboard.down("k");
   let jumpLinks = await page.locator(".--jump").all();
