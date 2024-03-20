@@ -1,6 +1,7 @@
 /**
  * @typedef {object} CustomWindowObject
- * @property {(event: KeyboardEvent) => void} [_jumpToListener]
+ * @property {undefined | ((event: KeyboardEvent) => void)} [_jumpToListener]
+ * @property {number} [_jumpToListenerCount]
  *
  * @typedef {{ [key: string]: HTMLElement }} LinkJumpMap
  */
@@ -543,6 +544,44 @@ function triggerSearchByInnerText() {
 // ----------------
 
 /**
+ * Adds a listener count in the DOM for reading from Playwright
+ *
+ * @returns {HTMLElement}
+ */
+function createHiddenCount() {
+  const node = document.createElement("div");
+  node.id = "_jumpToListenerCount";
+  node.style.display = "none";
+  node.setAttribute("data-count", "0");
+
+  document.body.appendChild(node);
+
+  return node;
+}
+
+/**
+ * Updates the listener count in the DOM for reading from Playwright
+ *
+ * @returns {void}
+ */
+function updateListenerCountInDom() {
+  const customWindow = /** @type {CustomWindow} */ (window);
+
+  // if we've already run the script and added a listener, don't re-add it.
+  if (!customWindow._jumpToListenerCount) {
+    return;
+  }
+
+  const hiddenCount =
+    document.getElementById("_jumpToListenerCount") || createHiddenCount();
+
+  hiddenCount.setAttribute(
+    "data-count",
+    `${customWindow._jumpToListenerCount}`,
+  );
+}
+
+/**
  * Adds three listeners:
  *
  * - One triggered by `k`, to click links by a random id generated
@@ -553,6 +592,11 @@ function triggerSearchByInnerText() {
  */
 function addExtensionListener() {
   const customWindow = /** @type {CustomWindow} */ (window);
+
+  // if we've already run the script and added a listener, don't re-add it.
+  if (customWindow._jumpToListener) {
+    return;
+  }
 
   /**
    * @param {KeyboardEvent} event
@@ -578,6 +622,12 @@ function addExtensionListener() {
       triggerLinkAggregatorFlow();
     }
   };
+
+  customWindow._jumpToListenerCount =
+    typeof customWindow._jumpToListenerCount === "undefined"
+      ? 1
+      : customWindow._jumpToListenerCount + 1;
+  updateListenerCountInDom();
 
   window.addEventListener("keydown", customWindow._jumpToListener);
 }
