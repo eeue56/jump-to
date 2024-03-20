@@ -332,6 +332,28 @@ function makeScrollVisualUpdater(letters) {
   };
 }
 
+/** @typedef {"same-tab" | "new-tab"} OpenLinkMode */
+
+/**
+ * Click on a link, based on openMode.
+ *
+ * @param {HTMLElement} link
+ * @param {OpenLinkMode} openMode
+ * @returns {null} Just return null to enforce switch coverage
+ */
+function clickOnLink(link, openMode) {
+  switch (openMode) {
+    case "new-tab": {
+      link.dispatchEvent(new MouseEvent("click", { ctrlKey: true }));
+      return null;
+    }
+    case "same-tab": {
+      link.click();
+      return null;
+    }
+  }
+}
+
 // ----------------
 // Our functions that get called from the root listener
 // ----------------
@@ -340,8 +362,9 @@ function makeScrollVisualUpdater(letters) {
  * Runs the regular flow with a given link jump map
  *
  * @param {LinkJumpMap} letters
+ * @param {OpenLinkMode} openMode
  */
-function regularFlow(letters) {
+function regularFlow(letters, openMode) {
   /** @type {string[]} */
   const lettersPressedSoFar = [];
   const scrollListener = makeScrollVisualUpdater(letters);
@@ -410,7 +433,7 @@ function regularFlow(letters) {
 
     if (letters[currentString]) {
       console.log(`Clicking ${currentString}...`);
-      letters[currentString].click();
+      clickOnLink(letters[currentString], openMode);
     } else {
       console.log(`Removing listener, got "${key}"`);
     }
@@ -427,17 +450,20 @@ function regularFlow(letters) {
  * - Add a visual indicator for each shortcut for each link (two letters)
  * - Removes irrelevant labels when other chars are pressed
  * - Removes listener when user hits Esc
+ *
+ * @param {OpenLinkMode} openMode
  */
-function triggerRegularFlow() {
+function triggerRegularFlow(openMode) {
   const links = allLinksInViewport();
   const letters = makeLetterMap(links);
-  regularFlow(letters);
+  regularFlow(letters, openMode);
 }
 
-function triggerLinkAggregatorFlow() {
+/** @param {OpenLinkMode} openMode */
+function triggerLinkAggregatorFlow(openMode) {
   const links = allCommentLinksInViewport();
   const letters = makeLetterMap(links);
-  regularFlow(letters);
+  regularFlow(letters, openMode);
 }
 
 /**
@@ -448,8 +474,10 @@ function triggerLinkAggregatorFlow() {
  *   for
  * - Removes irrelevant labels when other chars are pressed
  * - Removes listener when user hits Esc
+ *
+ * @param {OpenLinkMode} openMode
  */
-function triggerSearchByInnerText() {
+function triggerSearchByInnerText(openMode) {
   const links = allLinksInViewport();
   const letters = makeLetterMap(links);
 
@@ -502,7 +530,7 @@ function triggerSearchByInnerText() {
     if (event.key === "Enter") {
       window.removeEventListener("keydown", keydownListener);
       window.removeEventListener("scroll", scrollListener);
-      regularFlow(letters);
+      regularFlow(letters, openMode);
       return;
     }
 
@@ -530,7 +558,7 @@ function triggerSearchByInnerText() {
       // we only have 1 left, so we know it's what we want
       console.log(`Clicking ${currentString}...`);
       const letter = getLinkJumpLetter(visibileLinkJumps[0]);
-      letters[letter].click();
+      clickOnLink(letters[letter], openMode);
       reset();
     }
   };
@@ -584,11 +612,16 @@ function updateListenerCountInDom() {
 /**
  * Adds three listeners:
  *
- * - One triggered by `k`, to click links by a random id generated
- * - One triggered by `h`, to click links to comments (e.g on HN/Reddit/Lobsters)
- *   by a random id generated
- * - Another triggered by `/`, to allow users to search the text of links for a
- *   certain string
+ * - `k`, to click links by a random id generated
+ * - `h`, to click links to comments (e.g on HN/Reddit/Lobsters) by a random id
+ *   generated
+ * - `/`, to allow users to search the text of links for a certain string then
+ *   click it
+ * - `K`, to ctrl-click links by a random id generated
+ * - `H`, to ctrl-click links to comments (e.g on HN/Reddit/Lobsters) by a random
+ *   id generated
+ * - `?`, to allow users to search the text of links for a certain string then
+ *   ctrl-click it
  */
 function addExtensionListener() {
   const customWindow = /** @type {CustomWindow} */ (window);
@@ -607,19 +640,28 @@ function addExtensionListener() {
       return;
     }
 
-    if (event.ctrlKey || event.metaKey || event.shiftKey) {
+    if (event.ctrlKey || event.metaKey) {
       return;
     }
 
     if (event.key === "k") {
       event.preventDefault();
-      triggerRegularFlow();
+      triggerRegularFlow("same-tab");
     } else if (event.key === "/") {
       event.preventDefault();
-      triggerSearchByInnerText();
+      triggerSearchByInnerText("same-tab");
     } else if (event.key === "h") {
       event.preventDefault();
-      triggerLinkAggregatorFlow();
+      triggerLinkAggregatorFlow("same-tab");
+    } else if (event.key === "K") {
+      event.preventDefault();
+      triggerRegularFlow("new-tab");
+    } else if (event.key === "?") {
+      event.preventDefault();
+      triggerSearchByInnerText("new-tab");
+    } else if (event.key === "H") {
+      event.preventDefault();
+      triggerLinkAggregatorFlow("new-tab");
     }
   };
 
