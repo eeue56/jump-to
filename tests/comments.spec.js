@@ -22,6 +22,7 @@ test("comments (h)", async ({ page }) => {
   await page.keyboard.press("a");
   await expect(page).toHaveURL(/.*item\?id=39726156/);
 });
+
 test("comments (h) => Backspace", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
@@ -49,6 +50,7 @@ test("comments (h) => Backspace", async ({ page }) => {
   await page.keyboard.press("a");
   await expect(page).toHaveURL(/.*item\?id=39726156/);
 });
+
 test("comments ctrl-click (H)", async ({ context, page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
@@ -81,6 +83,7 @@ test("comments ctrl-click (H)", async ({ context, page }) => {
   await expect(page).toHaveURL(/.*link_aggregator\.html/);
   await expect(newPage).toHaveURL(/.*item\?id=39726156/);
 });
+
 test("comments click-click (H) => Backspace", async ({ context, page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(

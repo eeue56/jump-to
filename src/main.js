@@ -66,7 +66,15 @@ function isInInput() {
  * @returns {boolean}
  */
 function isVisibleLink(element) {
-  if (!(element.tagName === "A" || element.tagName === "BUTTON")) {
+  const style = getComputedStyle(element);
+
+  if (
+    !(
+      element.tagName === "A" ||
+      element.tagName === "BUTTON" ||
+      style.cursor === "pointer"
+    )
+  ) {
     return false;
   }
 

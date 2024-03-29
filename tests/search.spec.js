@@ -14,11 +14,11 @@ test("search (/)", async ({ page }) => {
 
   await page.keyboard.down("/");
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(300);
+  expect.soft(jumpLinks).toHaveLength(382);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(170);
+  expect.soft(jumpLinks).toHaveLength(188);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -46,11 +46,11 @@ test("search (/) => Backspace", async ({ page }) => {
 
   await page.keyboard.down("/");
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(300);
+  expect.soft(jumpLinks).toHaveLength(382);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(170);
+  expect.soft(jumpLinks).toHaveLength(188);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -66,11 +66,11 @@ test("search (/) => Backspace", async ({ page }) => {
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(170);
+  expect.soft(jumpLinks).toHaveLength(188);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(300);
+  expect.soft(jumpLinks).toHaveLength(382);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await page.locator(".--jump").all();
@@ -87,11 +87,11 @@ test("search (/) => Enter", async ({ page }) => {
 
   await page.keyboard.down("/");
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(300);
+  expect.soft(jumpLinks).toHaveLength(382);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(170);
+  expect.soft(jumpLinks).toHaveLength(188);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -105,7 +105,7 @@ test("search (/) => Enter", async ({ page }) => {
   jumpLinks = await getVisibleJumps(page);
   expect.soft(jumpLinks).toHaveLength(4);
 
-  await page.keyboard.press("b");
+  await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
   expect.soft(jumpLinks).toHaveLength(2);
 
@@ -130,11 +130,11 @@ test("search ctrl-click (?)", async ({ context, page }) => {
 
   await page.keyboard.down("?");
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(300);
+  expect.soft(jumpLinks).toHaveLength(382);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(170);
+  expect.soft(jumpLinks).toHaveLength(188);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -168,11 +168,11 @@ test("search ctrl-click (?) => Backspace", async ({ page }) => {
 
   await page.keyboard.down("?");
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(300);
+  expect.soft(jumpLinks).toHaveLength(382);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(170);
+  expect.soft(jumpLinks).toHaveLength(188);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -188,11 +188,11 @@ test("search ctrl-click (?) => Backspace", async ({ page }) => {
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(170);
+  expect.soft(jumpLinks).toHaveLength(188);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(300);
+  expect.soft(jumpLinks).toHaveLength(382);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await page.locator(".--jump").all();
@@ -214,11 +214,11 @@ test("search ctrl-click (?) => Enter", async ({ context, page }) => {
 
   await page.keyboard.down("?");
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(300);
+  expect.soft(jumpLinks).toHaveLength(382);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(170);
+  expect.soft(jumpLinks).toHaveLength(188);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -232,7 +232,7 @@ test("search ctrl-click (?) => Enter", async ({ context, page }) => {
   jumpLinks = await getVisibleJumps(page);
   expect.soft(jumpLinks).toHaveLength(4);
 
-  await page.keyboard.press("b");
+  await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
   expect.soft(jumpLinks).toHaveLength(2);
 

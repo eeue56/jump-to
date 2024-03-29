@@ -12,11 +12,11 @@ test("jump-to (k)", async ({ page }) => {
 
   await page.keyboard.down("k");
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(300);
+  expect.soft(jumpLinks).toHaveLength(382);
 
-  await page.keyboard.press("c");
+  await page.keyboard.press("d");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(12);
+  expect.soft(jumpLinks).toHaveLength(16);
 
   await page.keyboard.press("a");
   await expect(page).toHaveURL(/.*newest/);
@@ -36,11 +36,11 @@ test("jump-to ctrl-click (K)", async ({ context, page }) => {
 
   await page.keyboard.down("K");
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(300);
+  expect.soft(jumpLinks).toHaveLength(382);
 
-  await page.keyboard.press("c");
+  await page.keyboard.press("d");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(12);
+  expect.soft(jumpLinks).toHaveLength(16);
 
   await page.keyboard.press("a");
 
