@@ -4,9 +4,29 @@
  * @property {number} [_jumpToListenerCount]
  *
  * @typedef {{ [key: string]: HTMLElement }} LinkJumpMap
+ *
+ * @typedef {Object} Command
+ * @property {string} shortcut - The shortcut to press to enable the command
+ * @property {string} helpText - The help text to show to a user when they hover
+ *   over it
+ * @property {() => void} run - The callback to trigger when the command is run
  */
 
 /** @typedef {Window & CustomWindowObject} CustomWindow */
+
+/**
+ * @param {string} shortcut
+ * @param {string} helpText
+ * @param {() => void} run
+ * @returns {Command}
+ */
+function Command(shortcut, helpText, run) {
+  return {
+    shortcut,
+    helpText,
+    run,
+  };
+}
 
 // ----------------
 // General DOM related helpers not specific to this project
@@ -617,8 +637,34 @@ function updateListenerCountInDom() {
   );
 }
 
+/** @type {Command[]} */
+const commands = [
+  Command("k", "Create typeable shortcuts that will click on a link", () =>
+    triggerRegularFlow("same-tab"),
+  ),
+  Command("/", "Create search shortcuts that will click on a link", () =>
+    triggerSearchByInnerText("same-tab"),
+  ),
+  Command(
+    "h",
+    "Create typeable shortcuts for comments that will click on a link",
+    () => triggerLinkAggregatorFlow("same-tab"),
+  ),
+  Command("K", "Create typeable shortcuts that will ctrl-click on a link", () =>
+    triggerRegularFlow("new-tab"),
+  ),
+  Command("?", "Create search shortcuts that will ctrl-click on a link", () =>
+    triggerSearchByInnerText("new-tab"),
+  ),
+  Command(
+    "H",
+    "Create typeable shortcuts for comments that will ctrl-click on a link",
+    () => triggerLinkAggregatorFlow("new-tab"),
+  ),
+];
+
 /**
- * Adds three listeners:
+ * Adds a listener that responds to:
  *
  * - `k`, to click links by a random id generated
  * - `h`, to click links to comments (e.g on HN/Reddit/Lobsters) by a random id
@@ -652,24 +698,14 @@ function addExtensionListener() {
       return;
     }
 
-    if (event.key === "k") {
+    const matchingCommands = commands.filter(
+      (command) => command.shortcut === event.key,
+    );
+
+    if (matchingCommands.length > 0) {
       event.preventDefault();
-      triggerRegularFlow("same-tab");
-    } else if (event.key === "/") {
-      event.preventDefault();
-      triggerSearchByInnerText("same-tab");
-    } else if (event.key === "h") {
-      event.preventDefault();
-      triggerLinkAggregatorFlow("same-tab");
-    } else if (event.key === "K") {
-      event.preventDefault();
-      triggerRegularFlow("new-tab");
-    } else if (event.key === "?") {
-      event.preventDefault();
-      triggerSearchByInnerText("new-tab");
-    } else if (event.key === "H") {
-      event.preventDefault();
-      triggerLinkAggregatorFlow("new-tab");
+      const command = matchingCommands[0];
+      command.run();
     }
   };
 
