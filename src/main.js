@@ -123,6 +123,268 @@ function allCommentLinksInViewport() {
 }
 
 // ----------------
+// DOM helpers for creating the command palette
+// ----------------
+
+/**
+ * Add the command palette to the page
+ *
+ * @param {Command[]} commands
+ */
+function addCommandPalette(commands) {
+  const styles = document.createElement("style");
+  styles.innerHTML = `
+  .command-palette-overlay {
+    all: initial;
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 10pt;
+    color: #828282;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    padding: 1rem;
+  }
+
+  .command-palette {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .command-palette-heading {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .command-palette-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+  }
+
+  .command-palette-list {
+    margin-top: 1rem;
+  }
+
+  .command-palette-item {
+
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  .command-palette-item.selected {
+    background-color: #c2e6ff;
+  }
+`;
+
+  const overlay = document.createElement("div");
+  overlay.className = "command-palette-overlay";
+
+  const palette = document.createElement("div");
+  palette.className = "command-palette";
+
+  const heading = document.createElement("div");
+  heading.className = "command-palette-heading";
+  heading.innerText = "Palette";
+
+  const input = document.createElement("input");
+  input.className = "command-palette-input";
+
+  const list = document.createElement("div");
+  list.className = "command-palette-list";
+
+  for (const command of commands) {
+    const item = document.createElement("div");
+    item.className = "command-palette-item";
+    item.innerText = `${command.shortcut}: ${command.helpText}`;
+    item.setAttribute("data-shortcut", command.shortcut);
+
+    list.appendChild(item);
+  }
+
+  palette.appendChild(heading);
+  palette.appendChild(input);
+  palette.appendChild(list);
+  overlay.appendChild(styles);
+  overlay.appendChild(palette);
+
+  document.body.appendChild(overlay);
+
+  /** @param {string} shortcut */
+  function setSelectedItem(shortcut) {
+    console.log("setting shortcut to", shortcut);
+    /** @type {HTMLElement | null} */
+    const item = list.querySelector(`[data-shortcut="${shortcut}"]`);
+    item?.classList.add("selected");
+    currentSelectedShortcut = shortcut;
+  }
+
+  function unselectItems() {
+    console.log("unsetting all");
+    const items = list.querySelectorAll(`.command-palette-item.selected`);
+    items.forEach((item) => item.classList.remove("selected"));
+  }
+
+  /** @type {string[]} */
+  let searchString = [];
+
+  /** @type {string | null} */
+  let currentSelectedShortcut = commands[0].shortcut;
+
+  setSelectedItem(currentSelectedShortcut);
+
+  /**
+   * @typedef {Object} DomCommands
+   * @property {Command[]} visible
+   * @property {Command[]} invisible
+   */
+  /**
+   * Get commands from the DOM which are visible or invisible if they don't
+   * match the query
+   *
+   * @param {string} query
+   * @returns {DomCommands}
+   */
+  function getDomCommands(query) {
+    /** @type {Command[]} */
+    const visible = [];
+    /** @type {Command[]} */
+    const invisible = [];
+
+    for (const command of commands) {
+      /** @type {HTMLElement | null} */
+      const item = list.querySelector(`[data-shortcut="${command.shortcut}"]`);
+      if (item === null) continue;
+
+      const matchesQuery = command.shortcut.includes(query);
+
+      if (matchesQuery) {
+        visible.push(command);
+      } else {
+        invisible.push(command);
+      }
+    }
+    return {
+      visible,
+      invisible,
+    };
+  }
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      document.body.removeChild(overlay);
+      return;
+    }
+
+    if (event.ctrlKey || event.metaKey || event.key === "Shift") {
+      return;
+    }
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      return;
+    }
+
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const domCommandsPriorToQueryChange = getDomCommands(
+        searchString.join(""),
+      );
+      const selected = list.querySelector(`.command-palette-item.selected`);
+      const selectedShortcut = selected?.getAttribute("data-shortcut");
+
+      const currentIndex = domCommandsPriorToQueryChange.visible.findIndex(
+        (command) => command.shortcut === selectedShortcut,
+      );
+
+      const newIndex =
+        event.key === "ArrowDown" ? currentIndex + 1 : currentIndex - 1;
+      if (
+        newIndex < 0 ||
+        domCommandsPriorToQueryChange.visible.length === newIndex
+      ) {
+        return;
+      }
+
+      unselectItems();
+      setSelectedItem(domCommandsPriorToQueryChange.visible[newIndex].shortcut);
+
+      return;
+    }
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      document.body.removeChild(overlay);
+      commands
+        .filter((command) => command.shortcut === currentSelectedShortcut)[0]
+        .run();
+      return;
+    }
+
+    if (event.key === "Backspace") {
+      if (searchString.length === 0) {
+        document.body.removeChild(overlay);
+        return;
+      } else {
+        searchString.pop();
+      }
+    } else {
+      searchString.push(event.key);
+    }
+
+    const query = searchString.join("");
+
+    const domCommands = getDomCommands(query);
+
+    // get the currently selected command, if it's visible
+    const matchingCommands = domCommands.visible.filter(
+      (command) => command.shortcut === currentSelectedShortcut,
+    );
+
+    for (const command of domCommands.visible) {
+      /** @type {HTMLElement | null} */
+      const item = list.querySelector(`[data-shortcut="${command.shortcut}"]`);
+      if (item === null) continue;
+      item.style.display = "block";
+    }
+
+    for (const command of domCommands.invisible) {
+      /** @type {HTMLElement | null} */
+      const item = list.querySelector(`[data-shortcut="${command.shortcut}"]`);
+      if (item === null) continue;
+      item.style.display = "none";
+    }
+
+    console.log(matchingCommands, domCommands);
+
+    if (matchingCommands.length === 0) {
+      // the current shortcut is not visible
+      currentSelectedShortcut = null;
+      unselectItems();
+    }
+
+    if (matchingCommands.length === 0 && domCommands.visible.length > 0) {
+      // there are other available commands
+      currentSelectedShortcut = domCommands.visible[0].shortcut;
+      setSelectedItem(currentSelectedShortcut);
+    }
+  });
+
+  input.focus();
+}
+
+// ----------------
 // DOM helpers for adding, removing, or modifying link jumps
 // ----------------
 
@@ -637,32 +899,6 @@ function updateListenerCountInDom() {
   );
 }
 
-/** @type {Command[]} */
-const commands = [
-  Command("k", "Create typeable shortcuts that will click on a link", () =>
-    triggerRegularFlow("same-tab"),
-  ),
-  Command("/", "Create search shortcuts that will click on a link", () =>
-    triggerSearchByInnerText("same-tab"),
-  ),
-  Command(
-    "h",
-    "Create typeable shortcuts for comments that will click on a link",
-    () => triggerLinkAggregatorFlow("same-tab"),
-  ),
-  Command("K", "Create typeable shortcuts that will ctrl-click on a link", () =>
-    triggerRegularFlow("new-tab"),
-  ),
-  Command("?", "Create search shortcuts that will ctrl-click on a link", () =>
-    triggerSearchByInnerText("new-tab"),
-  ),
-  Command(
-    "H",
-    "Create typeable shortcuts for comments that will ctrl-click on a link",
-    () => triggerLinkAggregatorFlow("new-tab"),
-  ),
-];
-
 /**
  * Adds a listener that responds to:
  *
@@ -684,6 +920,35 @@ function addExtensionListener() {
   if (customWindow._jumpToListener) {
     return;
   }
+
+  /** @type {Command[]} */
+  const commands = [
+    Command("k", "Create typeable shortcuts that will click on a link", () =>
+      triggerRegularFlow("same-tab"),
+    ),
+    Command("/", "Create search shortcuts that will click on a link", () =>
+      triggerSearchByInnerText("same-tab"),
+    ),
+    Command(
+      "h",
+      "Create typeable shortcuts for comments that will click on a link",
+      () => triggerLinkAggregatorFlow("same-tab"),
+    ),
+    Command(
+      "K",
+      "Create typeable shortcuts that will ctrl-click on a link",
+      () => triggerRegularFlow("new-tab"),
+    ),
+    Command("?", "Create search shortcuts that will ctrl-click on a link", () =>
+      triggerSearchByInnerText("new-tab"),
+    ),
+    Command(
+      "H",
+      "Create typeable shortcuts for comments that will ctrl-click on a link",
+      () => triggerLinkAggregatorFlow("new-tab"),
+    ),
+    Command("p", "Open the command palette", () => addCommandPalette(commands)),
+  ];
 
   /**
    * @param {KeyboardEvent} event
