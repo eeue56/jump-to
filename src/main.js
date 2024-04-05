@@ -1,8 +1,4 @@
 /**
- * @typedef {object} CustomWindowObject
- * @property {undefined | ((event: KeyboardEvent) => void)} [_jumpToListener]
- * @property {number} [_jumpToListenerCount]
- *
  * @typedef {{ [key: string]: HTMLElement }} LinkJumpMap
  *
  * @typedef {Object} Command
@@ -132,62 +128,6 @@ function allCommentLinksInViewport() {
  * @param {Command[]} commands
  */
 function addCommandPalette(commands) {
-  const styles = document.createElement("style");
-  styles.innerHTML = `
-  .command-palette-overlay {
-    all: initial;
-    font-family: Verdana, Geneva, sans-serif;
-    font-size: 10pt;
-    color: #828282;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: start;
-    padding: 1rem;
-  }
-
-  .command-palette {
-    background-color: white;
-    padding: 1rem;
-    border-radius: 0.375rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    width: 100%;
-    max-width: 400px;
-  }
-
-  .command-palette-heading {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .command-palette-input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 0.25rem;
-  }
-
-  .command-palette-list {
-    margin-top: 1rem;
-  }
-
-  .command-palette-item {
-
-    cursor: pointer;
-    padding: 0.5rem;
-  }
-
-  .command-palette-item.selected {
-    background-color: #c2e6ff;
-  }
-`;
-
   const overlay = document.createElement("div");
   overlay.className = "command-palette-overlay";
 
@@ -216,7 +156,6 @@ function addCommandPalette(commands) {
   palette.appendChild(heading);
   palette.appendChild(input);
   palette.appendChild(list);
-  overlay.appendChild(styles);
   overlay.appendChild(palette);
 
   document.body.appendChild(overlay);
