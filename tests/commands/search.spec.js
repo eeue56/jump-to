@@ -1,6 +1,6 @@
 import { join } from "path";
 import { URL } from "url";
-import { expect, test } from "./fixture";
+import { expect, test } from "../fixture";
 import {
   search,
   searchBackspace,
@@ -14,7 +14,7 @@ test("search (/)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
 
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
@@ -26,7 +26,7 @@ test("search (/)", async ({ page }) => {
 test("search (/) => Backspace", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
@@ -38,7 +38,7 @@ test("search (/) => Backspace", async ({ page }) => {
 test("search (/) => Enter", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
@@ -51,7 +51,7 @@ test("search ctrl-click (?)", async ({ context, page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
 
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
@@ -68,7 +68,7 @@ test("search ctrl-click (?)", async ({ context, page }) => {
 test("search ctrl-click (?) => Backspace", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
@@ -80,7 +80,7 @@ test("search ctrl-click (?) => Backspace", async ({ page }) => {
 test("search ctrl-click (?) => Enter", async ({ context, page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());

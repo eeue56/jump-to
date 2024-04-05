@@ -1,17 +1,17 @@
 import { join } from "path";
 import { URL } from "url";
+import { expect, test } from "../fixture";
 import {
   comments,
   commentsBackspace,
   commentsCtrl,
   commentsCtrlBackspace,
 } from "./comments";
-import { expect, test } from "./fixture";
 
 test("comments (h)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
@@ -24,7 +24,7 @@ test("comments (h)", async ({ page }) => {
 test("comments (h) => Backspace", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
@@ -37,7 +37,7 @@ test("comments (h) => Backspace", async ({ page }) => {
 test("comments ctrl-click (H)", async ({ context, page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
@@ -55,7 +55,7 @@ test("comments ctrl-click (H)", async ({ context, page }) => {
 test("comments click-click (H) => Backspace", async ({ context, page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());

@@ -1,5 +1,5 @@
-import { expect } from "./fixture";
-import { getVisibleJumps } from "./getVisibleJumps";
+import { expect } from "../fixture";
+import { getVisibleJumps } from "../getVisibleJumps";
 
 /**
  * @typedef {import("playwright").Page} Page

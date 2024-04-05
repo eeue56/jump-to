@@ -1,11 +1,11 @@
 import { join } from "path";
 import { URL } from "url";
-import { expect, test } from "./fixture";
+import { expect, test } from "../fixture";
 import { jumpTo, jumpToCtrl } from "./jumpTo";
 
 test("jump-to (k)", async ({ page }) => {
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());
@@ -17,7 +17,7 @@ test("jump-to (k)", async ({ page }) => {
 
 test("jump-to ctrl-click (K)", async ({ context, page }) => {
   const url = new URL(
-    join(__dirname, "examples/link_aggregator.html"),
+    join(__dirname, "../examples/link_aggregator.html"),
     "file://",
   );
   await page.goto(url.toString());

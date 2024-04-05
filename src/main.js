@@ -1,19 +1,4 @@
 /**
- * @typedef {{ [key: string]: HTMLElement }} LinkJumpMap
- *
- * @typedef {"p" | "k" | "K" | "h" | "H" | "/" | "?"} KnownShortcut
- *
- * @typedef {Object} Command
- * @property {KnownShortcut} shortcut - The shortcut to press to enable the
- *   command
- * @property {string} helpText - The help text to show to a user when they hover
- *   over it
- * @property {() => void} run - The callback to trigger when the command is run
- */
-
-/** @typedef {Window & CustomWindowObject} CustomWindow */
-
-/**
  * @param {KnownShortcut} shortcut
  * @param {string} helpText
  * @param {() => void} run
@@ -800,6 +785,23 @@ function triggerSearchByInnerText(openMode) {
   window.addEventListener("keydown", keydownListener);
 }
 
+/** @param {MessageToBackground} message */
+function sendMessageToBackground(message) {
+  chrome.runtime.sendMessage(message);
+}
+
+function triggerMuteUnmute() {
+  sendMessageToBackground({
+    kind: "Mute",
+  });
+}
+
+function triggerMuteUnmuteOthers() {
+  sendMessageToBackground({
+    kind: "MuteOthers",
+  });
+}
+
 // ----------------
 // Extension-specific code
 // ----------------
@@ -871,6 +873,8 @@ function getCommands() {
       () => triggerLinkAggregatorFlow("new-tab"),
     ),
     Command("p", "Open the command palette", () => addCommandPalette(commands)),
+    Command("m", "Mute or unmute the current tab", () => triggerMuteUnmute()),
+    Command("M", "Mute or unmute other tabs", () => triggerMuteUnmuteOthers()),
   ];
   return commands;
 }

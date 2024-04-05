@@ -1,10 +1,12 @@
 import { join } from "path";
 import { URL } from "url";
 import { getCommands } from "../../src/main";
-import { comments, commentsCtrl } from "../comments";
+import { comments, commentsCtrl } from "../commands/comments";
+import { jumpTo, jumpToCtrl } from "../commands/jumpTo";
+import { search, searchCtrl } from "../commands/search";
 import { expect, test } from "../fixture";
-import { jumpTo, jumpToCtrl } from "../jumpTo";
-import { search, searchCtrl } from "../search";
+
+const commands = getCommands();
 
 test("palette (p)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
@@ -23,7 +25,7 @@ test("palette (p)", async ({ page }) => {
   await expect(paletteInput).toBeFocused();
 
   const options = await page.locator(".command-palette-item:visible").all();
-  await expect(options).toHaveLength(7);
+  await expect(options).toHaveLength(commands.length);
 
   await expect(options[0]).toHaveClass(/selected/);
 
@@ -46,7 +48,7 @@ test("palette (p) => filter", async ({ page }) => {
   await expect(paletteInput).toBeFocused();
 
   let options = await page.locator(".command-palette-item:visible").all();
-  await expect(options).toHaveLength(7);
+  await expect(options).toHaveLength(commands.length);
   expect(options[0]).toHaveClass(/selected/);
 
   await page.keyboard.down("k");
@@ -87,20 +89,20 @@ test("palette (p) => up and down", async ({ page }) => {
     );
   }
 
-  await expect(options).toHaveLength(7);
+  await expect(options).toHaveLength(commands.length);
 
   await expect(options[0]).toHaveClass(/selected/);
   await noOtherOptionsHaveSelected(0);
 
   await page.keyboard.down("ArrowDown");
   options = await page.locator(".command-palette-item:visible").all();
-  await expect(options).toHaveLength(7);
+  await expect(options).toHaveLength(commands.length);
   await expect(options[1]).toHaveClass(/selected/);
   await noOtherOptionsHaveSelected(1);
 
   await page.keyboard.down("ArrowUp");
   options = await page.locator(".command-palette-item:visible").all();
-  await expect(options).toHaveLength(7);
+  await expect(options).toHaveLength(commands.length);
   await expect(options[0]).toHaveClass(/selected/);
   await noOtherOptionsHaveSelected(0);
 
@@ -150,7 +152,7 @@ test("palette (p) => filter => enter", async ({ page }) => {
   await expect(paletteInput).toBeFocused();
 
   let options = await page.locator(".command-palette-item:visible").all();
-  await expect(options).toHaveLength(7);
+  await expect(options).toHaveLength(commands.length);
   expect(options[0]).toHaveClass(/selected/);
 
   await page.keyboard.down("p");
@@ -165,10 +167,10 @@ test("palette (p) => filter => enter", async ({ page }) => {
   await expect(palette).toBeVisible();
   options = await page.locator(".command-palette-item:visible").all();
   await expect(options[0]).toHaveClass(/selected/);
-  await expect(options).toHaveLength(7);
+  await expect(options).toHaveLength(commands.length);
 });
 
-for (const command of getCommands()) {
+for (const command of commands) {
   test(`palette (p) => filter (${command.shortcut}) => enter `, async ({
     page,
     context,
@@ -221,6 +223,12 @@ for (const command of getCommands()) {
         }
         case "?": {
           await searchCtrl(page, context);
+          return null;
+        }
+        case "m": {
+          return null;
+        }
+        case "M": {
           return null;
         }
       }

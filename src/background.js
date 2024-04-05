@@ -48,3 +48,26 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 chrome.action.onClicked.addListener(async (tab) => {
   await runOnTab(tab.id);
 });
+
+chrome.runtime.onMessage.addListener(
+  async (/** @type {MessageToBackground} */ request, sender) => {
+    if (request.kind === "Mute") {
+      const tab = sender.tab;
+
+      if (!tab) return;
+      if (!tab.mutedInfo) return;
+
+      await chrome.tabs.update({ muted: !tab.mutedInfo.muted });
+    } else if (request.kind === "MuteOthers") {
+      const activeTab = sender.tab;
+
+      if (!activeTab || !activeTab.id) return;
+
+      for (const tab of await chrome.tabs.query({})) {
+        if (tab.id && tab.id !== activeTab.id && tab.audible) {
+          await chrome.tabs.update(tab.id, { muted: !tab.mutedInfo?.muted });
+        }
+      }
+    }
+  },
+);

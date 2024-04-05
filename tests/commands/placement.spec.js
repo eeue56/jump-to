@@ -1,6 +1,6 @@
 import { join } from "path";
 import { URL } from "url";
-import { expect, test } from "./fixture";
+import { expect, test } from "../fixture";
 
 /**
  * @typedef {import("playwright").Page} Page
@@ -30,7 +30,7 @@ function isWithinViewport(page, box) {
 
 test("labelled are within viewport", async ({ page }) => {
   const url = new URL(
-    join(__dirname, "examples/links_on_edges.html"),
+    join(__dirname, "../examples/links_on_edges.html"),
     "file://",
   );
   await page.goto(url.toString());

@@ -16,6 +16,9 @@ A Vimium inspired keyboard shortcut script for browsers. Highlights all clickabl
 - k (K): click on links by typing their randomly generated two letter ids. Type the first letter to narrow it down.
 - h (H): same as k, but only highlight links containing "comment", for link aggregator sites like Reddit, HN, and Lobsters
 - / (?): click on links by searching for the contents of their innerText. Type the string to narrow it down, automatically clicking once one link-jump is left.
+- p: open the command palette
+- m: mute/unmute the current tab
+- M: mute/unmute all other tabs
 - Backspace when there's current input: go back one step.
 - Backspace when no current input / Esc: exit link jump mode, return to normal.
 - Enter when in search mode: switch to regular mode.
