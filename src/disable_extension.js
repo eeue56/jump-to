@@ -1,4 +1,4 @@
-/**
+/*
  * Adds a listener count in the DOM for reading from Playwright
  *
  * @returns {HTMLElement}
@@ -20,7 +20,7 @@ function createHiddenCount() {
  * @returns {void}
  */
 function updateListenerCountInDom() {
-  const customWindow = /** @type {CustomWindow} */ (window);
+  const customWindow = /** @type {CustomWindowObject} */ (window);
 
   // if we've already run the script and added a listener, don't re-add it.
   if (!customWindow._jumpToListenerCount) {
@@ -37,7 +37,7 @@ function updateListenerCountInDom() {
 }
 
 function removeListener() {
-  const customWindow = /** @type {CustomWindow} */ (window);
+  const customWindow = /** @type {CustomWindowObject} */ (window);
 
   if (customWindow._jumpToListener) {
     window.removeEventListener("keydown", customWindow._jumpToListener);

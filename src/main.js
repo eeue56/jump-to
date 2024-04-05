@@ -1,8 +1,11 @@
 /**
  * @typedef {{ [key: string]: HTMLElement }} LinkJumpMap
  *
+ * @typedef {"p" | "k" | "K" | "h" | "H" | "/" | "?"} KnownShortcut
+ *
  * @typedef {Object} Command
- * @property {string} shortcut - The shortcut to press to enable the command
+ * @property {KnownShortcut} shortcut - The shortcut to press to enable the
+ *   command
  * @property {string} helpText - The help text to show to a user when they hover
  *   over it
  * @property {() => void} run - The callback to trigger when the command is run
@@ -11,7 +14,7 @@
 /** @typedef {Window & CustomWindowObject} CustomWindow */
 
 /**
- * @param {string} shortcut
+ * @param {KnownShortcut} shortcut
  * @param {string} helpText
  * @param {() => void} run
  * @returns {Command}
@@ -287,7 +290,7 @@ function addCommandPalette(commands) {
     const domCommands = getDomCommands(query);
 
     // get the currently selected command, if it's visible
-    const matchingCommands = domCommands.visible.filter(
+    const currentlySelectedCommands = domCommands.visible.filter(
       (command) => command.shortcut === currentSelectedShortcut,
     );
 
@@ -305,15 +308,16 @@ function addCommandPalette(commands) {
       item.style.display = "none";
     }
 
-    console.log(matchingCommands, domCommands);
-
-    if (matchingCommands.length === 0) {
+    if (currentlySelectedCommands.length === 0) {
       // the current shortcut is not visible
       currentSelectedShortcut = null;
       unselectItems();
     }
 
-    if (matchingCommands.length === 0 && domCommands.visible.length > 0) {
+    if (
+      currentlySelectedCommands.length === 0 &&
+      domCommands.visible.length > 0
+    ) {
       // there are other available commands
       currentSelectedShortcut = domCommands.visible[0].shortcut;
       setSelectedItem(currentSelectedShortcut);
@@ -838,28 +842,8 @@ function updateListenerCountInDom() {
   );
 }
 
-/**
- * Adds a listener that responds to:
- *
- * - `k`, to click links by a random id generated
- * - `h`, to click links to comments (e.g on HN/Reddit/Lobsters) by a random id
- *   generated
- * - `/`, to allow users to search the text of links for a certain string then
- *   click it
- * - `K`, to ctrl-click links by a random id generated
- * - `H`, to ctrl-click links to comments (e.g on HN/Reddit/Lobsters) by a random
- *   id generated
- * - `?`, to allow users to search the text of links for a certain string then
- *   ctrl-click it
- */
-function addExtensionListener() {
-  const customWindow = /** @type {CustomWindow} */ (window);
-
-  // if we've already run the script and added a listener, don't re-add it.
-  if (customWindow._jumpToListener) {
-    return;
-  }
-
+/** @returns {Command[]} */
+function getCommands() {
   /** @type {Command[]} */
   const commands = [
     Command("k", "Create typeable shortcuts that will click on a link", () =>
@@ -888,6 +872,33 @@ function addExtensionListener() {
     ),
     Command("p", "Open the command palette", () => addCommandPalette(commands)),
   ];
+  return commands;
+}
+
+/**
+ * Adds a listener that responds to:
+ *
+ * - `k`, to click links by a random id generated
+ * - `h`, to click links to comments (e.g on HN/Reddit/Lobsters) by a random id
+ *   generated
+ * - `/`, to allow users to search the text of links for a certain string then
+ *   click it
+ * - `K`, to ctrl-click links by a random id generated
+ * - `H`, to ctrl-click links to comments (e.g on HN/Reddit/Lobsters) by a random
+ *   id generated
+ * - `?`, to allow users to search the text of links for a certain string then
+ *   ctrl-click it
+ */
+function addExtensionListener() {
+  const customWindow = /** @type {CustomWindow} */ (window);
+
+  // if we've already run the script and added a listener, don't re-add it.
+  if (customWindow._jumpToListener) {
+    return;
+  }
+
+  /** @type {Command[]} */
+  const commands = getCommands();
 
   /**
    * @param {KeyboardEvent} event
@@ -922,6 +933,10 @@ function addExtensionListener() {
   window.addEventListener("keydown", customWindow._jumpToListener);
 }
 
-if (window.location.protocol !== "chrome:") {
+if (typeof window !== "undefined" && window.location.protocol !== "chrome:") {
   addExtensionListener();
+} else {
+  module.exports = {
+    getCommands,
+  };
 }

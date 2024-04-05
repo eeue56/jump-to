@@ -1,6 +1,10 @@
 import { join } from "path";
 import { URL } from "url";
+import { getCommands } from "../../src/main";
+import { comments, commentsCtrl } from "../comments";
 import { expect, test } from "../fixture";
+import { jumpTo, jumpToCtrl } from "../jumpTo";
+import { search, searchCtrl } from "../search";
 
 test("palette (p)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
@@ -130,3 +134,96 @@ test("palette (p) => up and down", async ({ page }) => {
   await page.keyboard.down("Escape");
   await expect(palette).not.toBeVisible();
 });
+
+test("palette (p) => filter => enter", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  const url = new URL(
+    join(__dirname, "../examples/link_aggregator.html"),
+    "file://",
+  );
+  await page.goto(url.toString());
+
+  await page.keyboard.down("p");
+
+  const paletteInput = page.locator(".command-palette-input").first();
+  await expect(paletteInput).toBeVisible();
+  await expect(paletteInput).toBeFocused();
+
+  let options = await page.locator(".command-palette-item:visible").all();
+  await expect(options).toHaveLength(7);
+  expect(options[0]).toHaveClass(/selected/);
+
+  await page.keyboard.down("p");
+
+  options = await page.locator(".command-palette-item:visible").all();
+  await expect(options[0]).toHaveClass(/selected/);
+  await expect(options).toHaveLength(1);
+
+  const palette = page.locator(".command-palette-overlay").first();
+  await page.keyboard.down("Enter");
+
+  await expect(palette).toBeVisible();
+  options = await page.locator(".command-palette-item:visible").all();
+  await expect(options[0]).toHaveClass(/selected/);
+  await expect(options).toHaveLength(7);
+});
+
+for (const command of getCommands()) {
+  test(`palette (p) => filter (${command.shortcut}) => enter `, async ({
+    page,
+    context,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    const url = new URL(
+      join(__dirname, "../examples/link_aggregator.html"),
+      "file://",
+    );
+    await page.goto(url.toString());
+
+    await page.keyboard.down("p");
+
+    const paletteInput = page.locator(".command-palette-input").first();
+    await expect(paletteInput).toBeFocused();
+
+    await page.keyboard.down(command.shortcut);
+    const options = await page.locator(".command-palette-item:visible").all();
+    await expect(options[0]).toHaveClass(/selected/);
+    await expect(options[0]).toHaveAttribute("data-shortcut", command.shortcut);
+    await expect(options).toHaveLength(1);
+
+    await page.keyboard.down("Enter");
+
+    /** @type {null} */
+    const _ = await (async () => {
+      switch (command.shortcut) {
+        case "p": {
+          return null;
+        }
+        case "k": {
+          await jumpTo(page);
+          return null;
+        }
+        case "K": {
+          await jumpToCtrl(page, context);
+          return null;
+        }
+        case "h": {
+          await comments(page);
+          return null;
+        }
+        case "H": {
+          await commentsCtrl(page, context);
+          return null;
+        }
+        case "/": {
+          await search(page);
+          return null;
+        }
+        case "?": {
+          await searchCtrl(page, context);
+          return null;
+        }
+      }
+    })();
+  });
+}
