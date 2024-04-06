@@ -181,9 +181,10 @@ function addCommandPalette(commands) {
    * match the query
    *
    * @param {string} query
+   * @param {boolean} isLiteralMode
    * @returns {DomCommands}
    */
-  function getDomCommands(query) {
+  function getDomCommands(query, isLiteralMode) {
     /** @type {Command[]} */
     const visible = [];
     /** @type {Command[]} */
@@ -194,7 +195,9 @@ function addCommandPalette(commands) {
       const item = list.querySelector(`[data-shortcut="${command.shortcut}"]`);
       if (item === null) continue;
 
-      const matchesQuery = command.shortcut.includes(query);
+      const matchesQuery = isLiteralMode
+        ? command.shortcut === query
+        : command.shortcut.includes(query);
 
       if (matchesQuery) {
         visible.push(command);
@@ -226,6 +229,7 @@ function addCommandPalette(commands) {
       event.preventDefault();
       const domCommandsPriorToQueryChange = getDomCommands(
         searchString.join(""),
+        false,
       );
       const selected = list.querySelector(`.command-palette-item.selected`);
       const selectedShortcut = selected?.getAttribute("data-shortcut");
@@ -259,6 +263,8 @@ function addCommandPalette(commands) {
       return;
     }
 
+    const literalMode = event.key === ":";
+
     if (event.key === "Backspace") {
       if (searchString.length === 0) {
         document.body.removeChild(overlay);
@@ -267,12 +273,14 @@ function addCommandPalette(commands) {
         searchString.pop();
       }
     } else {
-      searchString.push(event.key);
+      if (!literalMode) {
+        searchString.push(event.key);
+      }
     }
 
     const query = searchString.join("");
 
-    const domCommands = getDomCommands(query);
+    const domCommands = getDomCommands(query, literalMode);
 
     // get the currently selected command, if it's visible
     const currentlySelectedCommands = domCommands.visible.filter(

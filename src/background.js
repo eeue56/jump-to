@@ -41,9 +41,7 @@ async function runOnTab(tabId) {
   }
 }
 
-chrome.tabs.onActivated.addListener(async (activeInfo) => {
-  await runOnTab(activeInfo.tabId);
-});
+chrome.tabs.onActivated.addListener(async (activeInfo) => {});
 
 chrome.action.onClicked.addListener(async (tab) => {
   await runOnTab(tab.id);

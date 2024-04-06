@@ -52,6 +52,7 @@ test("palette (p) => filter", async ({ page }) => {
   expect(options[0]).toHaveClass(/selected/);
 
   await page.keyboard.down("k");
+  await page.keyboard.down(":");
 
   options = await page.locator(".command-palette-item:visible").all();
   await expect(options[0]).toHaveClass(/selected/);
@@ -156,6 +157,7 @@ test("palette (p) => filter => enter", async ({ page }) => {
   expect(options[0]).toHaveClass(/selected/);
 
   await page.keyboard.down("p");
+  await page.keyboard.down(":");
 
   options = await page.locator(".command-palette-item:visible").all();
   await expect(options[0]).toHaveClass(/selected/);
@@ -187,7 +189,15 @@ for (const command of commands) {
     const paletteInput = page.locator(".command-palette-input").first();
     await expect(paletteInput).toBeFocused();
 
-    await page.keyboard.down(command.shortcut);
+    if (command.shortcut.length > 1) {
+      for (const letter of command.shortcut) {
+        await page.keyboard.down(letter);
+      }
+      await page.keyboard.down(":");
+    } else {
+      await page.keyboard.down(command.shortcut);
+      await page.keyboard.down(":");
+    }
     const options = await page.locator(".command-palette-item:visible").all();
     await expect(options[0]).toHaveClass(/selected/);
     await expect(options[0]).toHaveAttribute("data-shortcut", command.shortcut);
