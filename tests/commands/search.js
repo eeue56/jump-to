@@ -31,6 +31,7 @@ export async function search(page) {
   await page.keyboard.press("l");
   await expect(page).toHaveURL(/.*user\?id=single_cloud/);
 }
+
 /** @param {Page} page */
 export async function searchBackspace(page) {
   let jumpLinks = await page.locator(".--jump").all();
@@ -64,6 +65,7 @@ export async function searchBackspace(page) {
   jumpLinks = await page.locator(".--jump").all();
   expect.soft(jumpLinks).toHaveLength(0);
 }
+
 /** @param {Page} page */
 export async function searchEnter(page) {
   let jumpLinks = await page.locator(".--jump").all();
@@ -93,6 +95,7 @@ export async function searchEnter(page) {
 
   await expect(page).toHaveURL(/.*user\?id=single_cloud/);
 }
+
 /**
  * @param {Page} page
  * @param {BrowserContext} context
@@ -126,6 +129,7 @@ export async function searchCtrl(page, context) {
   await expect(page).toHaveURL(/.*link_aggregator\.html/);
   await expect(newPage).toHaveURL(/.*user\?id=single_cloud/);
 }
+
 /** @param {Page} page */
 export async function searchCtrlBackspace(page) {
   let jumpLinks = await page.locator(".--jump").all();
@@ -159,6 +163,7 @@ export async function searchCtrlBackspace(page) {
   jumpLinks = await page.locator(".--jump").all();
   expect.soft(jumpLinks).toHaveLength(0);
 }
+
 /**
  * @param {Page} page
  * @param {BrowserContext} context

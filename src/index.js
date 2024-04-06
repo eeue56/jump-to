@@ -21,6 +21,27 @@
 /** @typedef {Window & CustomWindowObject} CustomWindow */
 
 /**
- * @typedef {Object} MessageToBackground
- * @property {"Mute" | "MuteOthers"} kind
+ * @typedef {Object} Mute
+ * @property {"Mute"} kind
  */
+
+/**
+ * @typedef {Object} MuteOthers
+ * @property {"MuteOthers"} kind
+ */
+
+/**
+ * @typedef {Object} IsAudioPlaying
+ * @property {"IsAudioPlaying"} kind
+ */
+
+/** @typedef {Mute | MuteOthers | IsAudioPlaying} MessageToBackground */
+
+/**
+ * @typedef {Object} AudioPlayingState
+ * @property {"AudioPlayingState"} kind
+ * @property {boolean} isPlaying
+ * @property {boolean} isMuted
+ */
+
+/** @typedef {AudioPlayingState} MessageToContentScript */

@@ -785,21 +785,43 @@ function triggerSearchByInnerText(openMode) {
   window.addEventListener("keydown", keydownListener);
 }
 
-/** @param {MessageToBackground} message */
-function sendMessageToBackground(message) {
-  chrome.runtime.sendMessage(message);
+/**
+ * @param {MessageToBackground} message
+ * @returns {Promise<MessageToContentScript | null>}
+ */
+async function sendMessageToBackground(message) {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage(message, resolve);
+  });
 }
 
-function triggerMuteUnmute() {
-  sendMessageToBackground({
+async function triggerMuteUnmute() {
+  await sendMessageToBackground({
     kind: "Mute",
   });
 }
 
-function triggerMuteUnmuteOthers() {
-  sendMessageToBackground({
+async function triggerMuteUnmuteOthers() {
+  await sendMessageToBackground({
     kind: "MuteOthers",
   });
+}
+
+/** @returns {Promise<AudioPlayingState | null>} */
+async function getIsAudioPlaying() {
+  const state = await sendMessageToBackground({
+    kind: "IsAudioPlaying",
+  });
+
+  if (state === null) {
+    return null;
+  }
+
+  if (state.kind === "AudioPlayingState") {
+    return state;
+  }
+
+  return null;
 }
 
 // ----------------
