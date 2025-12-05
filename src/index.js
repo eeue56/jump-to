@@ -7,7 +7,17 @@
 /**
  * @typedef {{ [key: string]: HTMLElement }} LinkJumpMap
  *
- * @typedef {"p" | "k" | "K" | "h" | "H" | "/" | "?" | "m" | "M"} KnownShortcut
+ * @typedef {"p"
+ *   | "k"
+ *   | "K"
+ *   | "h"
+ *   | "H"
+ *   | "/"
+ *   | "?"
+ *   | "m"
+ *   | "M"
+ *   | "spike"
+ *   | "end spike"} KnownShortcut
  *
  *
  * @typedef {Object} Command
@@ -35,7 +45,38 @@
  * @property {"IsAudioPlaying"} kind
  */
 
-/** @typedef {Mute | MuteOthers | IsAudioPlaying} MessageToBackground */
+/**
+ * @typedef {Object} StartSpike
+ * @property {"StartSpike"} kind
+ */
+
+/**
+ * @typedef {Object} SpikeEntry
+ * @property {"SpikeEntry"} kind
+ * @property {string} url
+ * @property {string} title
+ * @property {number} tab
+ */
+
+/**
+ * @typedef {Object} AddSpikeEntry
+ * @property {"AddSpikeEntry"} kind
+ * @property {SpikeEntry} entry
+ */
+
+/**
+ * @typedef {Object} EndSpike
+ * @property {"EndSpike"} kind
+ */
+
+/**
+ * @typedef {Mute
+ *   | MuteOthers
+ *   | IsAudioPlaying
+ *   | StartSpike
+ *   | AddSpikeEntry
+ *   | EndSpike} MessageToBackground
+ */
 
 /**
  * @typedef {Object} AudioPlayingState
@@ -44,4 +85,10 @@
  * @property {boolean} isMuted
  */
 
-/** @typedef {AudioPlayingState} MessageToContentScript */
+/**
+ * @typedef {Object} CurrentSpike
+ * @property {"CurrentSpike"} kind
+ * @property {SpikeEntry[]} entries
+ */
+
+/** @typedef {AudioPlayingState | CurrentSpike} MessageToContentScript */

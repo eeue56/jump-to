@@ -241,6 +241,12 @@ for (const command of commands) {
         case "M": {
           return null;
         }
+        case "spike": {
+          return null;
+        }
+        case "end spike": {
+          return null;
+        }
       }
     })();
   });

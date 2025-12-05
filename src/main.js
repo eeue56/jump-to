@@ -150,7 +150,6 @@ function addCommandPalette(commands) {
 
   /** @param {string} shortcut */
   function setSelectedItem(shortcut) {
-    console.log("setting shortcut to", shortcut);
     /** @type {HTMLElement | null} */
     const item = list.querySelector(`[data-shortcut="${shortcut}"]`);
     item?.classList.add("selected");
@@ -158,7 +157,6 @@ function addCommandPalette(commands) {
   }
 
   function unselectItems() {
-    console.log("unsetting all");
     const items = list.querySelectorAll(`.command-palette-item.selected`);
     items.forEach((item) => item.classList.remove("selected"));
   }
@@ -257,9 +255,13 @@ function addCommandPalette(commands) {
       event.preventDefault();
       event.stopImmediatePropagation();
       document.body.removeChild(overlay);
-      commands
-        .filter((command) => command.shortcut === currentSelectedShortcut)[0]
-        .run();
+      const matchingCommands = commands.filter(
+        (command) => command.shortcut === currentSelectedShortcut,
+      );
+
+      if (matchingCommands.length > 0) {
+        matchingCommands[0].run();
+      }
       return;
     }
 
@@ -314,6 +316,146 @@ function addCommandPalette(commands) {
       // there are other available commands
       currentSelectedShortcut = domCommands.visible[0].shortcut;
       setSelectedItem(currentSelectedShortcut);
+    }
+  });
+
+  input.focus();
+}
+
+// ----------------
+// DOM helpers for adding, removing, or modifying spike commit
+// ----------------
+
+/**
+ * Add the spike commit UI to the page
+ *
+ * @param {SpikeEntry[]} entries
+ */
+function addSpikeCommit(entries) {
+  const overlay = document.createElement("div");
+  overlay.className = "spike-commit-overlay";
+
+  const commitUi = document.createElement("div");
+  commitUi.className = "spike-commit";
+
+  const heading = document.createElement("div");
+  heading.className = "spike-commit-heading";
+  heading.innerText = "Review commit";
+
+  const input = document.createElement("input");
+  input.className = "spike-commit-input";
+
+  const hiddenInput = document.createElement("input");
+  hiddenInput.type = "hidden";
+
+  const list = document.createElement("div");
+  list.className = "spike-commit-list";
+
+  for (const entry of entries) {
+    const item = document.createElement("div");
+    item.className = "spike-commit-item";
+    item.innerText = `${entry.title}: ${entry.url}`;
+    item.setAttribute("data-url", entry.url);
+
+    list.appendChild(item);
+  }
+
+  commitUi.appendChild(heading);
+  commitUi.appendChild(input);
+  commitUi.appendChild(list);
+  overlay.appendChild(commitUi);
+
+  document.body.appendChild(overlay);
+
+  /** @type {SpikeEntry[]} */
+  const entriesToSave = [];
+  /** @type {string | null} */
+  let currentHighlightedEntryUrl = null;
+
+  /** @param {string} url */
+  function setHighlightedItem(url) {
+    /** @type {HTMLElement | null} */
+    const item = list.querySelector(`[data-url="${url}"]`);
+    item?.classList.add("highlighted");
+    currentHighlightedEntryUrl = url;
+  }
+
+  function unHighlightItems() {
+    const items = list.querySelectorAll(`.spike-commit-item.highlighted`);
+    items.forEach((item) => item.classList.remove("highlighted"));
+  }
+
+  if (entries.length > 0) {
+    setHighlightedItem(entries[0].url);
+  }
+
+  /** @type {boolean} */
+  let hasManuallyMoved = false;
+
+  /** @param {"Up" | "Down"} direction */
+  function move(direction) {
+    const highlighted = list.querySelector(`.spike-commit-item.highlighted`);
+    const highlightedUrl = highlighted?.getAttribute("data-url");
+
+    const currentIndex = entries.findIndex(
+      (entry) => entry.url === highlightedUrl,
+    );
+
+    const newIndex = direction === "Down" ? currentIndex + 1 : currentIndex - 1;
+    if (newIndex < 0 || entries.length === newIndex) {
+      return;
+    }
+
+    unHighlightItems();
+    setHighlightedItem(entries[newIndex].url);
+  }
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      overlay.remove();
+      return;
+    }
+
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      hasManuallyMoved = true;
+      move(event.key === "ArrowUp" ? "Up" : "Down");
+      return;
+    }
+
+    if (event.key === " ") {
+      event.preventDefault();
+
+      const highlighted = list.querySelector(`.spike-commit-item.highlighted`);
+      const highlightedUrl = highlighted?.getAttribute("data-url");
+
+      const currentEntry = entries.find(
+        (entry) => entry.url === highlightedUrl,
+      );
+
+      if (currentEntry) {
+        if (highlighted?.classList.contains("saved")) {
+          entriesToSave.splice(
+            entriesToSave.findIndex((entry) => entry.url === currentEntry.url),
+            1,
+          );
+        } else {
+          entriesToSave.push(currentEntry);
+        }
+        highlighted?.classList.toggle("saved");
+
+        if (!hasManuallyMoved) {
+          move("Down");
+          const nextHighlighted = list.querySelector(
+            `.spike-commit-item.highlighted`,
+          );
+          // when we've hit the end
+          if (highlightedUrl === nextHighlighted?.getAttribute("data-url")) {
+            input.classList.add("typeable");
+          }
+        }
+      }
     }
   });
 
@@ -798,9 +940,8 @@ function triggerSearchByInnerText(openMode) {
  * @returns {Promise<MessageToContentScript | null>}
  */
 async function sendMessageToBackground(message) {
-  return new Promise((resolve) => {
-    chrome.runtime.sendMessage(message, resolve);
-  });
+  const response = await chrome.runtime.sendMessage(message);
+  return response;
 }
 
 async function triggerMuteUnmute() {
@@ -830,6 +971,23 @@ async function getIsAudioPlaying() {
   }
 
   return null;
+}
+
+async function triggerStartSpike() {
+  await sendMessageToBackground({
+    kind: "StartSpike",
+  });
+}
+
+async function triggerEndSpike() {
+  const message = await sendMessageToBackground({
+    kind: "EndSpike",
+  });
+  console.log(message);
+
+  if (message?.kind === "CurrentSpike") {
+    addSpikeCommit(message.entries);
+  }
 }
 
 // ----------------
@@ -905,6 +1063,10 @@ function getCommands() {
     Command("p", "Open the command palette", () => addCommandPalette(commands)),
     Command("m", "Mute or unmute the current tab", () => triggerMuteUnmute()),
     Command("M", "Mute or unmute other tabs", () => triggerMuteUnmuteOthers()),
+    Command("spike", "Start a spike into a specific topic", () =>
+      triggerStartSpike(),
+    ),
+    Command("end spike", "Finish the current spike", () => triggerEndSpike()),
   ];
   return commands;
 }
