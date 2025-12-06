@@ -35,12 +35,18 @@ function elementIsVisibleInViewport(element) {
 
   const rect = element.getBoundingClientRect();
 
+  const maxHeight = Math.floor(
+    window.innerHeight || document.documentElement.clientHeight,
+  );
+  const maxWidth = Math.floor(
+    window.innerWidth || document.documentElement.clientWidth,
+  );
+
   return (
     rect.top >= 0 &&
     rect.left >= 0 &&
-    rect.bottom <=
-      (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    Math.floor(rect.bottom) <= maxHeight &&
+    Math.floor(rect.right) <= maxWidth
   );
 }
 
@@ -79,10 +85,37 @@ function isVisibleLink(element) {
       style.cursor === "pointer"
     )
   ) {
+    console.log("not a A/Button/pointer false");
     return false;
   }
 
+  console.log("visible:", elementIsVisibleInViewport(element));
   return elementIsVisibleInViewport(element);
+}
+
+/**
+ * @param {HTMLElement[]} elements
+ * @returns {HTMLElement[]}
+ */
+function removeDuplicateElements(elements) {
+  /** @type {HTMLElement[]} */
+  const unique = [];
+
+  for (const element of elements) {
+    let isParentAlreadyInUnique = false;
+    for (const uniqueElement of unique) {
+      if (uniqueElement.contains(element)) {
+        isParentAlreadyInUnique = true;
+        break;
+      }
+    }
+
+    if (!isParentAlreadyInUnique) {
+      unique.push(element);
+    }
+  }
+
+  return unique;
 }
 
 /**
@@ -93,7 +126,9 @@ function isVisibleLink(element) {
 function allLinksInViewport() {
   /** @type {NodeListOf<HTMLElement>} */
   const allElements = document.querySelectorAll("body *");
-  return [...allElements].filter(isVisibleLink);
+  const visible = [...allElements].filter(isVisibleLink);
+  const unique = removeDuplicateElements(visible);
+  return [...unique];
 }
 
 /**
@@ -476,8 +511,9 @@ function addLinkJump(link, letter) {
   const rect = link.getBoundingClientRect();
   const height = rect.bottom - rect.top;
 
-  const offsetX = 20;
+  const offsetX = 10;
   const wouldBeOffTheLeftScreen = rect.x - offsetX < 0;
+  const jitterY = Math.floor(Math.random() * 15) - 7;
 
   const jump = document.createElement("div");
 
@@ -485,27 +521,28 @@ function addLinkJump(link, letter) {
   str.innerText = letter;
   str.style.color = "black";
   str.style.backgroundColor = "#ffff6e";
-  str.style.paddingLeft = "3px";
-  str.style.paddingRight = "3px";
+  str.style.paddingLeft = "1px";
+  str.style.paddingRight = "1px";
   jump.appendChild(str);
 
   jump.style.position = "absolute";
   jump.style.left = wouldBeOffTheLeftScreen
     ? `${rect.right + window.scrollX}px`
     : `${rect.left + window.scrollX - offsetX}px`;
-  jump.style.top = `${rect.bottom + window.scrollY}px`;
-  jump.style.width = "50px";
+  jump.style.top = `${rect.top + window.scrollY + jitterY}px`;
+  jump.style.width = "30px";
   jump.style.height = "30px";
-  jump.style.fontSize = "20px";
+  jump.style.fontSize = "10px";
   jump.style.zIndex = link.style.zIndex + 1;
 
   const border = document.createElement("div");
-  border.style.border = "3px solid black";
+  border.style.border = "1px dashed black";
   border.style.position = "absolute";
-  border.style.padding = "2px";
+  border.style.padding = "1px";
+  border.style.opacity = "0.4";
   border.style.left = `${rect.left + window.scrollX}px`;
   border.style.top = `${rect.top + window.scrollY}px`;
-  border.style.width = `${rect.right - rect.left}px`;
+  border.style.width = `${rect.right - rect.left - 2}px`;
   border.style.height = `${height}px`;
   border.style.zIndex = link.style.zIndex + 1;
 

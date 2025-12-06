@@ -10,11 +10,11 @@ import { getVisibleJumps } from "../getVisibleJumps";
 
 export async function search(page) {
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(382);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(188);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -35,11 +35,11 @@ export async function search(page) {
 /** @param {Page} page */
 export async function searchBackspace(page) {
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(382);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(188);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -55,11 +55,11 @@ export async function searchBackspace(page) {
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(188);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(382);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await page.locator(".--jump").all();
@@ -69,11 +69,11 @@ export async function searchBackspace(page) {
 /** @param {Page} page */
 export async function searchEnter(page) {
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(382);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(188);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -87,7 +87,7 @@ export async function searchEnter(page) {
   jumpLinks = await getVisibleJumps(page);
   expect.soft(jumpLinks).toHaveLength(4);
 
-  await page.keyboard.press("i");
+  await page.keyboard.press("b");
   jumpLinks = await getVisibleJumps(page);
   expect.soft(jumpLinks).toHaveLength(2);
 
@@ -102,11 +102,11 @@ export async function searchEnter(page) {
  */
 export async function searchCtrl(page, context) {
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(382);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(188);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -133,11 +133,11 @@ export async function searchCtrl(page, context) {
 /** @param {Page} page */
 export async function searchCtrlBackspace(page) {
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(382);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(188);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -153,11 +153,11 @@ export async function searchCtrlBackspace(page) {
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(188);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(382);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("Backspace");
   jumpLinks = await page.locator(".--jump").all();
@@ -170,11 +170,11 @@ export async function searchCtrlBackspace(page) {
  */
 export async function searchCtrlEnter(page, context) {
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(382);
+  expect.soft(jumpLinks).toHaveLength(300);
 
   await page.keyboard.press("s");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(188);
+  expect.soft(jumpLinks).toHaveLength(170);
 
   await page.keyboard.press("i");
   jumpLinks = await getVisibleJumps(page);
@@ -188,7 +188,7 @@ export async function searchCtrlEnter(page, context) {
   jumpLinks = await getVisibleJumps(page);
   expect.soft(jumpLinks).toHaveLength(4);
 
-  await page.keyboard.press("i");
+  await page.keyboard.press("b");
   jumpLinks = await getVisibleJumps(page);
   expect.soft(jumpLinks).toHaveLength(2);
 

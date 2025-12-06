@@ -10,11 +10,11 @@ import { getVisibleJumps } from "../getVisibleJumps";
 
 export async function jumpTo(page) {
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(382);
+  expect.soft(jumpLinks).toHaveLength(300);
 
-  await page.keyboard.press("d");
+  await page.keyboard.press("c");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(16);
+  expect.soft(jumpLinks).toHaveLength(12);
 
   await page.keyboard.press("a");
   await expect(page).toHaveURL(/.*newest/);
@@ -26,11 +26,11 @@ export async function jumpTo(page) {
 
 export async function jumpToCtrl(page, context) {
   let jumpLinks = await page.locator(".--jump").all();
-  expect.soft(jumpLinks).toHaveLength(382);
+  expect.soft(jumpLinks).toHaveLength(300);
 
-  await page.keyboard.press("d");
+  await page.keyboard.press("c");
   jumpLinks = await getVisibleJumps(page);
-  expect.soft(jumpLinks).toHaveLength(16);
+  expect.soft(jumpLinks).toHaveLength(12);
 
   await page.keyboard.press("a");
 
